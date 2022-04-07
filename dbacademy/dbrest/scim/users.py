@@ -36,8 +36,12 @@ class ScimUsersClient:
         return self.client.execute_post_json(url, payload, expected=[200,201])
 
     def to_users_list(self, users):
+
+        # One way or the other, we will use the full list
+        all_users = self.list()
+
         if users is None:
-            users = self.list()
+            users = all_users
         elif type(users) == str or type(users) == dict:
             users = [users] # Convert single argument users to a list
         else:
@@ -51,9 +55,14 @@ class ScimUsersClient:
 
             elif type(user) == str:
                 if "@" in user:
-                    new_users.append(self.client.scim().users().get_by_username(user))
+                    for u in all_users:
+                        if u.get("userName") == user: 
+                            new_users.append(u)
                 else:
-                    new_users.append(self.client.scim().users().get_by_id(user))
+                    for u in all_users:
+                        if u.get("id") == user: 
+                            new_users.append(u)
+
 
         return new_users
     
