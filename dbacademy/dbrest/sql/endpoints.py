@@ -176,7 +176,7 @@ class SqlEndpointsClient:
                                     enable_serverless_compute:bool,
                                     min_num_clusters:int = 1,
                                     max_num_clusters:int = 1,
-                                    auto_stop_mins:int = 45,
+                                    auto_stop_mins:int = 120,
                                     enable_photon:bool = True,
                                     spot_instance_policy:str = RELIABILITY_OPTIMIZED,
                                     channel:str = CHANNEL_NAME_CURRENT,
@@ -190,7 +190,7 @@ class SqlEndpointsClient:
         enable_serverless_compute (bool): Set to True to employ serverless compute, otherwise classic compute.
         min_num_clusters (int = 1): The minimum number of clusters for this endpoint.
         max_num_clusters (int = 1): The maximum number of clusters for this endpoint.
-        auto_stop_mins (int = 45): The number of minutes after which idle endpoints will be shut down.
+        auto_stop_mins (int = 120): The number of minutes after which idle endpoints will be shut down.
         enable_photon (bool = True): Set to True to employ the Photon runtime otherwise classic runtime.
         spot_instance_policy (str = RELIABILITY_OPTIMIZED): The spot instance policy - see SPOT_POLICIES for the list of valid values.
         channel (str = CHANNEL_NAME_CURRENT): The endpoint's channel - see CHANNELS for the list of valid values.
