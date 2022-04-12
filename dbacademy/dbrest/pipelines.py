@@ -1,5 +1,6 @@
 # Databricks notebook source
 from dbacademy.dbrest import DBAcademyRestClient
+import builtins
 
 
 class PipelinesClient:
@@ -10,16 +11,15 @@ class PipelinesClient:
 
         self.base_uri = f"{self.endpoint}/api/2.0/pipelines"
 
-    def list(self):
+    def list(self, max_results=100):
         pipelines = []
-        response = self.client.execute_get_json(f"{self.base_uri}")
-        
-        next_page_token = response.get("next_page_token")
-        pipelines.extend(response.get("statuses"))
+        response = self.client.execute_get_json(f"{self.base_uri}?max_results={max_results}")
 
-        while next_page_token is not None:
+        while True:
+            pipelines.extend(response.get("statuses", builtins.list()))
             next_page_token = response.get("next_page_token")
-            pipelines.extend(response.get("statuses"))
+            if next_page_token is None: break
+            response = self.client.execute_get_json(f"{self.base_uri}?max_results={max_results}&page_token={next_page_token}")
 
         return pipelines
 
