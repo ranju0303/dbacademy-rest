@@ -11,7 +11,16 @@ class ScimServicePrincipalsClient:
 
     def list(self):
         response = self.client.execute_get_json(f"{self.base_url}")
-        return response
+        all_items = response.get("Resources", [])
+
+        total = response.get("totalResults")
+        while len(all_items) != total:
+            response = self.client.execute_get_json(f"{self.base_url}")
+            total = response.get("totalResults")
+            items = response.get("Resources", [])
+            all_items.extend(items)
+
+        return all_items
         # sps = response.get("Resources", list())
         # totalResults = response.get("totalResults")
         # assert len(users) == int(totalResults), f"The totalResults ({totalResults}) does not match the number of records ({len(users)}) returned"
@@ -39,4 +48,4 @@ class ScimServicePrincipalsClient:
             value = {"value": entitlement}
             params["entitlements"].append(value)
 
-        return self.client.execute_post_json(f"{self.base_url}", params)
+        return self.client.execute_post_json(f"{self.base_url}", params, expected=201)
