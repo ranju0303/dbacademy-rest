@@ -17,5 +17,26 @@ class ScimServicePrincipalsClient:
         # assert len(users) == int(totalResults), f"The totalResults ({totalResults}) does not match the number of records ({len(users)}) returned"
         # return users
 
-    def get_by_id(self, id:str):
-        return self.client.execute_get_json(f"{self.base_url}/{id}")
+    def get_by_id(self, service_principle_id: str):
+        return self.client.execute_get_json(f"{self.base_url}/{service_principle_id}")
+
+    def create(self, display_name: str, group_ids: list, entitlements: list):
+        params = {
+            "displayName": display_name,
+            "entitlements": [],
+            "groups": [],
+            "schemas": ["urn:ietf:params:scim:schemas:core:2.0:ServicePrincipal"],
+            "active": True
+        }
+
+        group_ids = group_ids if group_ids is not None else list()
+        for group_id in group_ids:
+            value = {"value": group_id}
+            params["groups"].append(value)
+
+        entitlements = entitlements if entitlements is not None else list()
+        for entitlement in entitlements:
+            value = {"value": entitlement}
+            params["entitlements"].append(value)
+
+        return self.client.execute_post_json(f"{self.base_url}/{id}", params)
