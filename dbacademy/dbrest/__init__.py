@@ -80,6 +80,10 @@ class DBAcademyRestClient:
         from dbacademy.dbrest.sql import SqlClient
         return SqlClient(self, self.token, self.endpoint)
 
+    def tokens(self):
+        from dbacademy.dbrest.tokens import TokensClient
+        return TokensClient(self, self.token, self.endpoint)
+
     def uc(self):
         from dbacademy.dbrest.uc import UcClient
         return UcClient(self, self.token, self.endpoint)
