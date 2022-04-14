@@ -8,7 +8,7 @@ class WorkspaceClient:
         self.token = token
         self.endpoint = endpoint
 
-    def ls(self, path, recursive=False):
+    def ls(self, path, recursive=False, object_types=["NOTEBOOK"]):
         if not recursive:
             try:
                 results = self.client.execute_get_json(f"{self.endpoint}/api/2.0/workspace/list?path={path}", expected=[200, 404])
@@ -29,23 +29,12 @@ class WorkspaceClient:
             while len(queue) > 0:
                 next = queue.pop()
                 object_type = next["object_type"]
-                if object_type == "NOTEBOOK":
+                if object_type in object_types:
                     entities.append(next)
                 elif object_type == "DIRECTORY":
                     queue.extend(self.ls(next["path"]))
-                    
+
             return entities
-
-    def ls_pd(self, path):
-        # I don't have Pandas and I don't want to have to add Pandas.
-        # Use local import so as to not require project dependencies
-        # noinspection PyPackageRequirements
-        import pandas as pd
-
-        objects = pd.DataFrame(self.ls(path))
-        objects["object"] = objects["path"].apply(lambda p: p.split("/")[-1])
-        return_cols = ["object", "object_type", "object_id", "language", "path"]
-        return objects[return_cols].sort_values("object")
 
     def mkdirs(self, path) -> dict:
         return self.client.execute_post_json(f"{self.endpoint}/api/2.0/workspace/mkdirs", {"path": path})
