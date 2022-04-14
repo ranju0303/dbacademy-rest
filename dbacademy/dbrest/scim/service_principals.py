@@ -39,4 +39,4 @@ class ScimServicePrincipalsClient:
             value = {"value": entitlement}
             params["entitlements"].append(value)
 
-        return self.client.execute_post_json(f"{self.base_url}/{id}", params)
+        return self.client.execute_post_json(f"{self.base_url}", params)
