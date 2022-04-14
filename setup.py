@@ -4,6 +4,6 @@ from setuptools import find_packages
 
 setuptools.setup(
     name="dbacademy-rest",
-    version="0.1",
+    version="0.2",
     packages=find_packages(),
 )
