@@ -20,7 +20,7 @@ class ScimServicePrincipalsClient:
     def get_by_id(self, service_principle_id: str):
         return self.client.execute_get_json(f"{self.base_url}/{service_principle_id}")
 
-    def create(self, display_name: str, group_ids: list, entitlements: list):
+    def create(self, display_name: str, group_ids: list = [], entitlements: list = []):
         params = {
             "displayName": display_name,
             "entitlements": [],
