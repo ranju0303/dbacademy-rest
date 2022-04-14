@@ -19,13 +19,13 @@ class DBAcademyRestClient:
         self.session = requests.Session()
         self.session.mount('https://', HTTPAdapter(max_retries=retry))
 
-        if self.endpoint is not None:
+        if endpoint is not None:
             self.endpoint = endpoint
         else:
             from dbacademy import dbgems
             self.endpoint = dbgems.get_notebooks_api_endpoint()
 
-        if self.token is not None:
+        if token is not None:
             self.token = token
         else:
             from dbacademy import dbgems
