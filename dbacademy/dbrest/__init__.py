@@ -4,6 +4,13 @@ import typing
 class DBAcademyRestClient:
   
     def __init__(self, endpoint: str = None, token: str = None, throttle: int = 0):
+        """
+        Creates a new instance of the Databricks Academy Rest Client.
+        :param endpoint: The target endpoint or the notebook's default endpoint when None.
+        :param token: The corresponding user's access token or the notebook's access token when None.
+        :param throttle: The number of seconds to block before executing the next request.
+        """
+
         import requests
         from urllib3.util.retry import Retry
         from requests.adapters import HTTPAdapter
