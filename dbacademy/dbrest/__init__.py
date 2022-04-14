@@ -3,7 +3,7 @@ import typing
 
 class DBAcademyRestClient:
   
-    def __init__(self, endpoint: str = None, token: str = None, throttle: int = 0):
+    def __init__(self, token: str = None, endpoint: str = None, throttle: int = 0):
         """
         Creates a new instance of the Databricks Academy Rest Client.
             :param endpoint: The target endpoint or the notebook's default endpoint when None.
