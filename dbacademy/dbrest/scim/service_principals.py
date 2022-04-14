@@ -10,7 +10,7 @@ class ScimServicePrincipalsClient:
         self.base_url = f"{self.endpoint}/2.0/preview/scim/v2/ServicePrincipals"
 
     def list(self):
-        response = self.client.execute_get_json(f"{self.base_url}")
+        response = self.client.execute_get(f"{self.base_url}")
         return response
         # users = response.get("Resources", list())
         # totalResults = response.get("totalResults")
