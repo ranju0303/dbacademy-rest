@@ -21,13 +21,16 @@ class ScimServicePrincipalsClient:
             all_items.extend(items)
 
         return all_items
-        # sps = response.get("Resources", list())
-        # totalResults = response.get("totalResults")
-        # assert len(users) == int(totalResults), f"The totalResults ({totalResults}) does not match the number of records ({len(users)}) returned"
-        # return users
 
     def get_by_id(self, service_principle_id: str):
         return self.client.execute_get_json(f"{self.base_url}/{service_principle_id}")
+
+    def get_by_name(self, display_name):
+        all_items = self.list()
+        for item in all_items:
+            if item.get("displayName") == display_name:
+                return item
+        return None
 
     def create(self, display_name: str, group_ids: list = [], entitlements: list = []):
         params = {
