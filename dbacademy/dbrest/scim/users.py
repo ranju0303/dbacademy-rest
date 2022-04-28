@@ -27,7 +27,7 @@ class ScimUsersClient:
 
     def delete_by_id(self, user_id):
         url = f"{self.endpoint}/api/2.0/preview/scim/v2/Users/{user_id}"
-        return self.client.execute_delete_json(url)
+        return self.client.execute_delete_json(url, expected=204)
 
     def delete_by_username(self, username):
         for user in self.list():
