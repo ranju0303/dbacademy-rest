@@ -10,8 +10,8 @@ class ScimUsersClient:
     def list(self):
         response = self.client.execute_get_json(f"{self.endpoint}/api/2.0/preview/scim/v2/Users")
         users = response.get("Resources", list())
-        totalResults = response.get("totalResults")
-        assert len(users) == int(totalResults), f"The totalResults ({totalResults}) does not match the number of records ({len(users)}) returned"
+        total_results = response.get("totalResults")
+        assert len(users) == int(total_results), f"The totalResults ({total_results}) does not match the number of records ({len(users)}) returned"
         return users
 
     def get_by_id(self, user_id):
@@ -22,6 +22,17 @@ class ScimUsersClient:
         for user in self.list():
             if username == user.get("userName"):
                 return user
+
+        return None
+
+    def delete_by_id(self, user_id):
+        url = f"{self.endpoint}/api/2.0/preview/scim/v2/Users/{user_id}"
+        return self.client.execute_delete_json(url)
+
+    def delete_by_username(self, username):
+        for user in self.list():
+            if username == user.get("userName"):
+                return self.delete_by_id(user.get("id"))
 
         return None
 
