@@ -10,7 +10,11 @@ class JobsClient:
 
     def create(self, params):
         if "notebook_task" in params:
-            print("DEPRECATION WARNING: You are using the Jobs 2.0 version of create as noted by the existence of the notebook_task parameter. Please upgrade to the 2.1 version.")
+            print("*"*80)
+            print("DEPRECATION WARNING")
+            print("You are using the Jobs 2.0 version of create as noted by the existence of the notebook_task parameter.")
+            print("Please upgrade to the 2.1 version.")
+            print("*"*80)
             return self.create_2_0(params)
         else:
             return self.create_2_1(params)
