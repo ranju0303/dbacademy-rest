@@ -20,9 +20,9 @@ class ClustersClient:
     def get_current_instance_pool_id(self):
         from dbacademy import dbgems
         cluster_id = dbgems.get_tags()["clusterId"]
-        return self.get(cluster_id).get("spark_version", None)
+        return self.get(cluster_id).get("instance_pool_id", None)
 
     def get_current_node_type_id(self):
         from dbacademy import dbgems
         cluster_id = dbgems.get_tags()["clusterId"]
-        return self.get(cluster_id).get("spark_version", None)
+        return self.get(cluster_id).get("node_type_id", None)
