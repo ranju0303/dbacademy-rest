@@ -28,7 +28,7 @@ class JobsClient:
     def get(self, job_id):
         return self.client.execute_get_json(f"{self.endpoint}/api/2.0/jobs/get?job_id={job_id}")
 
-    def run_now(self, job_id:str, notebook_params:dict = None):
+    def run_now(self, job_id: str, notebook_params: dict = None):
         payload = {
             "job_id": 
             job_id
@@ -58,7 +58,7 @@ class JobsClient:
         jobs = self.list()
 
         deleted = 0
-        s = "s" if len(jobs) != 1 else ""
+        # s = "s" if len(jobs) != 1 else ""
         # print(f"Found {len(jobs)} job{s} total")
 
         for job_name in job_list:
@@ -67,7 +67,7 @@ class JobsClient:
                     job_id = job["job_id"]
 
                     runs = self.client.runs().list_by_job_id(job_id)
-                    s = "s" if len(runs) != 1 else ""
+                    # s = "s" if len(runs) != 1 else ""
                     # print(f"Found {len(runs)} run{s} for job {job_id}")
                     delete_job = True
 

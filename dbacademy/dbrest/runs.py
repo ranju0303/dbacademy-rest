@@ -39,7 +39,7 @@ class RunsClient:
         state = response["state"]["life_cycle_state"]
         job_id = response.get("job_id", 0)
 
-        if state != "TERMINATED" and state != "INTERNAL_ERROR":
+        if state != "TERMINATED" and state != "INTERNAL_ERROR" and state != "SKIPPED":
             if state == "PENDING" or state == "RUNNING":
                 print(f" - Job #{job_id}-{run_id} is {state}, checking again in {wait} seconds")
                 time.sleep(wait)
