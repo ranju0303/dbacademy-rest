@@ -9,7 +9,17 @@ class JobsClient:
         self.endpoint = endpoint  # The API endpoint
 
     def create(self, params):
+        if "notebook_task" in params:
+            print("DEPRECATION WARNING: You are using the Jobs 2.0 version of create as noted by the existence of the notebook_task parameter. Please upgrade to the 2.1 version.")
+            return self.create_2_0(params)
+        else:
+            return self.create_2_1(params)
+
+    def create_2_0(self, params):
         return self.client.execute_post_json(f"{self.endpoint}/api/2.0/jobs/create", params)
+
+    def create_2_1(self, params):
+        return self.client.execute_post_json(f"{self.endpoint}/api/2.1/jobs/create", params)
 
     def get(self, job_id):
         return self.client.execute_get_json(f"{self.endpoint}/api/2.0/jobs/get?job_id={job_id}")
