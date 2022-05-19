@@ -20,6 +20,5 @@ class ScimClient():
         return ScimServicePrincipalsClient(self.client, self.token, self.endpoint)
 
     def groups(self):
-        raise Exception("The groups() client is not yet supported.")
-        # from dbacademy.dbrest.scim.groups import ScimGroupsClient
-        # return ScimGroupsClient(self, self.token, self.endpoint)
+        from dbacademy.dbrest.scim.groups import ScimGroupsClient
+        return ScimGroupsClient(self.client, self.token, self.endpoint)

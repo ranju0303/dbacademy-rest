@@ -30,8 +30,7 @@ class JobsClient:
 
     def run_now(self, job_id: str, notebook_params: dict = None):
         payload = {
-            "job_id": 
-            job_id
+            "job_id": job_id
         }
         if notebook_params is not None:
             payload["notebook_params"] = notebook_params

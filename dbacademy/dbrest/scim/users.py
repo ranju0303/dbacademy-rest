@@ -1,5 +1,6 @@
 from dbacademy.dbrest import DBAcademyRestClient
 
+
 class ScimUsersClient:
 
     def __init__(self, client: DBAcademyRestClient, token: str, endpoint: str):
@@ -38,13 +39,13 @@ class ScimUsersClient:
 
     def create(self, username):
         payload = {
-            "schemas": [ "urn:ietf:params:scim:schemas:core:2.0:User" ],
+            "schemas": ["urn:ietf:params:scim:schemas:core:2.0:User"],
             "userName": username,
             "groups": [],
-            "entitlements":[]
+            "entitlements": []
         }
         url = f"{self.endpoint}/api/2.0/preview/scim/v2/Users"
-        return self.client.execute_post_json(url, payload, expected=[200,201])
+        return self.client.execute_post_json(url, payload, expected=[200, 201])
 
     def to_users_list(self, users):
 
@@ -54,7 +55,7 @@ class ScimUsersClient:
         if users is None:
             users = all_users
         elif type(users) == str or type(users) == dict:
-            users = [users] # Convert single argument users to a list
+            users = [users]  # Convert single argument users to a list
         else:
             assert type(users) == list, f"Expected the parameter \"users\" to be a list, found {type(users)}"
 
@@ -74,12 +75,11 @@ class ScimUsersClient:
                         if u.get("id") == user: 
                             new_users.append(u)
 
-
         return new_users
     
     def add_entitlement(self, user_id, entitlement):
         payload = {
-            "schemas": [ "urn:ietf:params:scim:api:messages:2.0:PatchOp" ],
+            "schemas": ["urn:ietf:params:scim:api:messages:2.0:PatchOp"],
             "Operations": [
                 {
                     "op": "add",
@@ -97,7 +97,7 @@ class ScimUsersClient:
 
     def remove_entitlement(self, user_id, entitlement):
         payload = {
-            "schemas": [ "urn:ietf:params:scim:api:messages:2.0:PatchOp" ],
+            "schemas": ["urn:ietf:params:scim:api:messages:2.0:PatchOp"],
             "Operations": [
                 {
                     "op": "delete",
