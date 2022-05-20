@@ -20,8 +20,11 @@ class ScimUsersClient:
         return self.client.execute_get_json(url)
 
     def get_by_username(self, username):
+        return self.get_by_name(username)
+
+    def get_by_name(self, name):
         for user in self.list():
-            if username == user.get("userName"):
+            if name == user.get("userName"):
                 return user
 
         return None
