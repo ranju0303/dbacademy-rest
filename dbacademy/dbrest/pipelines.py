@@ -74,12 +74,19 @@ class PipelinesClient:
         if clusters == None: clusters = []
         assert type(clusters) == list, f"Expected clusters to be of type list, found {type(clusters)}"
         if len(clusters) == 0:
-            clusters.append({
-                "autoscale": {
-                    "min_workers": min_workers,
-                    "max_workers": max_workers,
-                }
-            })
+            if min_workers == max_workers:
+                clusters.append({
+                    "label": "default",
+                    "num_workers": min_workers,
+                })
+            else:
+                clusters.append({
+                    "label": "default",
+                    "autoscale": {
+                        "min_workers": min_workers,
+                        "max_workers": max_workers,
+                    }
+                })
 
         if notebooks is not None:
             libraries = []
