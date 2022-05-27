@@ -65,19 +65,21 @@ class PipelinesClient:
     def create_from_dict(self, params:dict):
         return self.client.execute_post_json(f"{self.base_uri}", params)
 
-    def create(self, name:str, storage:str, target:str, continuous:bool=False, development:bool=True, configuration:dict = None, notebooks=None, libraries:list=None, clusters:list = None):
+    def create(self, name: str, storage: str, target: str, continuous: bool = False, development: bool = True, configuration: dict = None, notebooks: list = None, libraries: list = None, clusters: list = None, min_workers: int = 1, max_workers: int = 1):
         
         if configuration is None:
             configuration = {}
         assert type(configuration) == dict, f"Expected configuration to be of type dict, found {type(configuration)}"
-        
 
         if clusters == None: clusters = []
         assert type(clusters) == list, f"Expected clusters to be of type list, found {type(clusters)}"
         if len(clusters) == 0:
             clusters.append({
-                "num_workers": 1
-            })    
+                "autoscale": {
+                    "min_workers": min_workers,
+                    "max_workers": max_workers,
+                }
+            })
 
         if notebooks is not None:
             libraries = []
