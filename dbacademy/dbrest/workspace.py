@@ -1,4 +1,4 @@
-# Databricks notebook source
+from typing import Union
 from dbacademy.dbrest import DBAcademyRestClient
 
 
@@ -15,7 +15,7 @@ class WorkspaceClient:
                 if results is None:
                     return None
                 else:
-                    return results["objects"] if "objects" in results else []
+                    return results.get("objects", [])
 
             except Exception as e:
                 raise Exception(f"Unexpected exception listing {path}") from e
@@ -32,7 +32,8 @@ class WorkspaceClient:
                 if object_type in object_types:
                     entities.append(next)
                 elif object_type == "DIRECTORY":
-                    queue.extend(self.ls(next["path"]))
+                    result = self.ls(next["path"])
+                    if result is not None: queue.extend(result)
 
             return entities
 
@@ -43,7 +44,7 @@ class WorkspaceClient:
         payload = {"path": path, "recursive": True}
         return self.client.execute_post_json(f"{self.endpoint}/api/2.0/workspace/delete", payload, expected=[200, 404])
 
-    def import_html_file(self, html_path:str, content:str, overwrite=True) -> dict:
+    def import_html_file(self, html_path: str, content: str, overwrite=True) -> dict:
         import base64
 
         payload = {
@@ -55,7 +56,7 @@ class WorkspaceClient:
         }
         return self.client.execute_post_json(f"{self.endpoint}/api/2.0/workspace/import", payload)
 
-    def import_notebook(self, language:str, notebook_path:str, content:str, overwrite=True) -> dict:
+    def import_notebook(self, language: str, notebook_path: str, content: str, overwrite=True) -> dict:
         import base64
 
         payload = {
@@ -70,17 +71,17 @@ class WorkspaceClient:
     def export_notebook(self, notebook_path) -> str:
         from urllib.parse import urlencode
         params = urlencode({
-            "path" : notebook_path, 
-            "direct_download" : "true"
+            "path": notebook_path,
+            "direct_download": "true"
         })
         return self.client.execute_get(f"{self.endpoint}/api/2.0/workspace/export?{params}").text
 
-    def get_status(self, notebook_path) -> dict:
+    def get_status(self, notebook_path) -> Union[None, dict]:
         from urllib.parse import urlencode
         params = urlencode({
-            "path" : notebook_path
+            "path": notebook_path
         })
-        response = self.client.execute_get(f"{self.endpoint}/api/2.0/workspace/get-status?{params}", expected=[200,404])
+        response = self.client.execute_get(f"{self.endpoint}/api/2.0/workspace/get-status?{params}", expected=[200, 404])
         if response.status_code == 404:
             return None
         else:
