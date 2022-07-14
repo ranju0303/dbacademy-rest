@@ -1,4 +1,3 @@
-# Databricks notebook source
 import json
 import requests
 from dbacademy.dbrest import DBAcademyRestClient
@@ -10,6 +9,9 @@ class ReposClient:
         self.client = client
         self.token = token
         self.endpoint = endpoint
+
+    def list(self) -> dict:
+        return self.client.execute_get_json(f"{self.endpoint}/api/2.0/repos")
 
     def update(self, repo_id, branch) -> dict:
         return self.client.execute_patch_json(f"{self.endpoint}/api/2.0/repos/{repo_id}", {"branch": branch})

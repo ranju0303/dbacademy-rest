@@ -1,6 +1,5 @@
 from dbacademy.dbrest import DBAcademyRestClient
 
-
 class TokenManagementClient:
     def __init__(self, client: DBAcademyRestClient, token: str, endpoint: str):
         self.client = client
