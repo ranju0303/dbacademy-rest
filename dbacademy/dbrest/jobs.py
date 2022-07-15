@@ -1,12 +1,13 @@
+from __future__ import annotations
 from dbacademy.dbrest import DBAcademyRestClient
 
-
 class JobsClient:
-
-    def __init__(self, client: DBAcademyRestClient, token: str, endpoint: str):
+    def __init__(self, client: DBAcademyRestClient):
         self.client = client      # Client API exposing other operations to this class
-        self.token = token        # The authentication token
-        self.endpoint = endpoint  # The API endpoint
+
+    def __call__(self) -> JobsClient:
+        """Returns itself.  Provided for backwards compatibility."""
+        return self
 
     def create(self, params):
         if "notebook_task" in params:
@@ -20,13 +21,13 @@ class JobsClient:
             return self.create_2_1(params)
 
     def create_2_0(self, params):
-        return self.client.execute_post_json(f"{self.endpoint}/api/2.0/jobs/create", params)
+        return self.client.execute_post_json(f"{self.client.endpoint}/api/2.0/jobs/create", params)
 
     def create_2_1(self, params):
-        return self.client.execute_post_json(f"{self.endpoint}/api/2.1/jobs/create", params)
+        return self.client.execute_post_json(f"{self.client.endpoint}/api/2.1/jobs/create", params)
 
     def get(self, job_id):
-        return self.client.execute_get_json(f"{self.endpoint}/api/2.0/jobs/get?job_id={job_id}")
+        return self.client.execute_get_json(f"{self.client.endpoint}/api/2.0/jobs/get?job_id={job_id}")
 
     def run_now(self, job_id: str, notebook_params: dict = None):
         payload = {
@@ -35,13 +36,13 @@ class JobsClient:
         if notebook_params is not None:
             payload["notebook_params"] = notebook_params
 
-        return self.client.execute_post_json(f"{self.endpoint}/api/2.0/jobs/run-now", payload)
+        return self.client.execute_post_json(f"{self.client.endpoint}/api/2.0/jobs/run-now", payload)
 
     def delete_by_job_id(self, job_id):
-        return self.client.execute_post_json(f"{self.endpoint}/api/2.0/jobs/delete", {"job_id": job_id})
+        return self.client.execute_post_json(f"{self.client.endpoint}/api/2.0/jobs/delete", {"job_id": job_id})
 
     def list(self):
-        response = self.client.execute_get_json(f"{self.endpoint}/api/2.0/jobs/list")
+        response = self.client.execute_get_json(f"{self.client.endpoint}/api/2.0/jobs/list")
         return response.get("jobs", list())
 
     def delete_by_name(self, jobs, success_only):

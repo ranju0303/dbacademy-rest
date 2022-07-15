@@ -1,3 +1,4 @@
+from __future__ import annotations
 from dbacademy.dbrest import DBAcademyRestClient
 
 COST_OPTIMIZED = "COST_OPTIMIZED"
@@ -30,19 +31,21 @@ CLUSTER_SIZES = [CLUSTER_SIZE_2X_SMALL,
 
 class SqlEndpointsClient:
 
-    def __init__(self, client: DBAcademyRestClient, token: str, endpoint: str):
+    def __init__(self, client: DBAcademyRestClient):
         self.client = client
-        self.token = token
-        self.endpoint = endpoint
+
+    def __call__(self) -> SqlEndpointsClient:
+        """Returns itself.  Provided for backwards compatibility."""
+        return self
 
     def start(self, endpoint_id):
-        return self.client.execute_post_json(f"{self.endpoint}/api/2.0/sql/endpoints/{endpoint_id}/start", {})
+        return self.client.execute_post_json(f"{self.client.endpoint}/api/2.0/sql/endpoints/{endpoint_id}/start", {})
 
     def stop(self, endpoint_id):
-        return self.client.execute_post_json(f"{self.endpoint}/api/2.0/sql/endpoints/{endpoint_id}/stop", {})
+        return self.client.execute_post_json(f"{self.client.endpoint}/api/2.0/sql/endpoints/{endpoint_id}/stop", {})
 
     def get_by_id(self, endpoint_id):
-        return self.client.execute_get_json(f"{self.endpoint}/api/2.0/sql/endpoints/{endpoint_id}")
+        return self.client.execute_get_json(f"{self.client.endpoint}/api/2.0/sql/endpoints/{endpoint_id}")
 
     def get_by_name(self, name):
         for endpoint in self.list():
@@ -51,10 +54,10 @@ class SqlEndpointsClient:
         return None
 
     def delete(self, endpoint_id):
-        return self.client.execute_delete_json(f"{self.endpoint}/api/2.0/sql/endpoints/{endpoint_id}")
+        return self.client.execute_delete_json(f"{self.client.endpoint}/api/2.0/sql/endpoints/{endpoint_id}")
 
     def list(self):
-        result = self.client.execute_get_json(f"{self.endpoint}/api/2.0/sql/endpoints")
+        result = self.client.execute_get_json(f"{self.client.endpoint}/api/2.0/sql/endpoints")
         return [] if "endpoints" not in result else result.get("endpoints")
 
     def create(self, name:str,
@@ -96,7 +99,7 @@ class SqlEndpointsClient:
                 "value": value
             })
 
-        return self.client.execute_post_json(f"{self.endpoint}/api/2.0/sql/endpoints", params)
+        return self.client.execute_post_json(f"{self.client.endpoint}/api/2.0/sql/endpoints", params)
 
     def edit(self, endpoint_id:str,
                    name:str = None,
@@ -155,7 +158,7 @@ class SqlEndpointsClient:
                     "value": value
                 })
 
-        self.client.execute_post_json(f"{self.endpoint}/api/2.0/sql/endpoints/{endpoint_id}/edit", params)
+        self.client.execute_post_json(f"{self.client.endpoint}/api/2.0/sql/endpoints/{endpoint_id}/edit", params)
         return self.get_by_id(endpoint_id)
 
     def to_endpoint_name(self, user, naming_template:str, naming_params:dict):

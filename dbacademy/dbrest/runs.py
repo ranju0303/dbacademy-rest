@@ -1,34 +1,37 @@
+from __future__ import annotations
 from dbacademy.dbrest import DBAcademyRestClient
 import builtins
 
 class RunsClient:
-    def __init__(self, client: DBAcademyRestClient, token: str, endpoint: str):
+    def __init__(self, client: DBAcademyRestClient):
         self.client = client
-        self.token = token
-        self.endpoint = endpoint
+
+    def __call__(self) -> RunsClient:
+        """Returns itself.  Provided for backwards compatibility."""
+        return self
 
     def get(self, run_id):
-        return self.client.execute_get_json(f"{self.endpoint}/api/2.0/jobs/runs/get?run_id={run_id}")
+        return self.client.execute_get_json(f"{self.client.endpoint}/api/2.0/jobs/runs/get?run_id={run_id}")
 
     def list(self, runs=builtins.list()):
-        json_response = self.client.execute_get_json(f"{self.endpoint}/api/2.0/jobs/runs/list?limit=1000&offset={len(runs)}")
+        json_response = self.client.execute_get_json(f"{self.client.endpoint}/api/2.0/jobs/runs/list?limit=1000&offset={len(runs)}")
         runs.extend(json_response.get("runs", builtins.list()))
 
         if not json_response.get("has_more", False): return runs
         else: return self.list(runs)
 
     def list_by_job_id(self, job_id, runs=builtins.list()):
-        json_response = self.client.execute_get_json(f"{self.endpoint}/api/2.0/jobs/runs/list?limit=1000&offset={len(runs)}&job_id={job_id}")
+        json_response = self.client.execute_get_json(f"{self.client.endpoint}/api/2.0/jobs/runs/list?limit=1000&offset={len(runs)}&job_id={job_id}")
         runs.extend(json_response.get("runs", builtins.list()))
 
         if not json_response.get("has_more", False): return runs
         else: return self.list_by_job_id(runs)
 
     def cancel(self, run_id): 
-        return self.client.execute_post_json(f"{self.endpoint}/api/2.0/jobs/runs/cancel", {"run_id": run_id})
+        return self.client.execute_post_json(f"{self.client.endpoint}/api/2.0/jobs/runs/cancel", {"run_id": run_id})
 
     def delete(self, run_id): 
-        return self.client.execute_post_json(f"{self.endpoint}/api/2.0/jobs/runs/delete", {"run_id": run_id}, expected=[200,400])
+        return self.client.execute_post_json(f"{self.client.endpoint}/api/2.0/jobs/runs/delete", {"run_id": run_id}, expected=[200,400])
 
     def wait_for(self, run_id):
         import time

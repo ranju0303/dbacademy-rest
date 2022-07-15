@@ -42,6 +42,42 @@ class DBAcademyRestClient:
             s = "" if self.throttle == 1 else "s"
             print(f"** WARNING ** Requests are being throttled by {self.throttle} second{s} per request.")
 
+        from dbacademy.dbrest.clusters import ClustersClient
+        self.clusters=ClustersClient(self)
+
+        from dbacademy.dbrest.jobs import JobsClient
+        self.jobs=JobsClient(self)
+
+        from dbacademy.dbrest.permissions import PermissionsClient
+        self.permissions=PermissionsClient(self)
+
+        from dbacademy.dbrest.pipelines import PipelinesClient
+        self.pipelines=PipelinesClient(self)
+
+        from dbacademy.dbrest.repos import ReposClient
+        self.repos=ReposClient(self)
+
+        from dbacademy.dbrest.runs import RunsClient
+        self.runs=RunsClient(self)
+
+        from dbacademy.dbrest.scim import ScimClient
+        self.scim=ScimClient(self)
+
+        from dbacademy.dbrest.sql import SqlClient
+        self.sql=SqlClient(self)
+
+        from dbacademy.dbrest.tokens import TokensClient
+        self.tokens=TokensClient(self)
+
+        from dbacademy.dbrest.token_management import TokenManagementClient
+        self.token_management=TokenManagementClient(self)
+
+        from dbacademy.dbrest.uc import UcClient
+        self.uc=UcClient(self)
+
+        from dbacademy.dbrest.workspace import WorkspaceClient
+        self.workspace=WorkspaceClient(self)
+
     def help(self):
         methods = [func for func in dir(self) if callable(getattr(self, func)) and not func.startswith("__")]
         for method in methods:
@@ -50,55 +86,6 @@ class DBAcademyRestClient:
     def throttle_calls(self):
         import time
         time.sleep(self.throttle)
-
-    def clusters(self):
-        from dbacademy.dbrest.clusters import ClustersClient
-        return ClustersClient(self, self.token, self.endpoint)
-
-    def jobs(self):
-        from dbacademy.dbrest.jobs import JobsClient
-        return JobsClient(self, self.token, self.endpoint)
-
-    def permissions(self):
-        from dbacademy.dbrest.permissions import PermissionsClient
-        return PermissionsClient(self, self.token, self.endpoint)
-
-    def pipelines(self):
-        from dbacademy.dbrest.pipelines import PipelinesClient
-        return PipelinesClient(self, self.token, self.endpoint)
-
-    def repos(self):
-        from dbacademy.dbrest.repos import ReposClient
-        return ReposClient(self, self.token, self.endpoint)
-
-    def runs(self):
-        from dbacademy.dbrest.runs import RunsClient
-        return RunsClient(self, self.token, self.endpoint)
-
-    def scim(self):
-        from dbacademy.dbrest.scim import ScimClient
-        return ScimClient(self, self.token, self.endpoint)
-
-    def sql(self):
-        from dbacademy.dbrest.sql import SqlClient
-        return SqlClient(self, self.token, self.endpoint)
-
-    def tokens(self):
-        from dbacademy.dbrest.tokens import TokensClient
-        return TokensClient(self, self.token, self.endpoint)
-
-    def token_management(self):
-        from dbacademy.dbrest.token_management import TokenManagementClient
-        return TokenManagementClient(self, self.token, self.endpoint)
-
-    def uc(self):
-        from dbacademy.dbrest.uc import UcClient
-        return UcClient(self, self.token, self.endpoint)
-
-    def workspace(self):
-        from dbacademy.dbrest.workspace import WorkspaceClient
-
-        return WorkspaceClient(self, self.token, self.endpoint)
 
     def execute_patch_json(self, url: str, params: dict, expected=200) -> dict:
         return self.execute_patch(url, params, expected).json()

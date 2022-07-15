@@ -1,22 +1,24 @@
+from __future__ import annotations
 from dbacademy.dbrest import DBAcademyRestClient
-
 
 class ScimUsersClient:
 
-    def __init__(self, client: DBAcademyRestClient, token: str, endpoint: str):
+    def __init__(self, client: DBAcademyRestClient):
         self.client = client      # Client API exposing other operations to this class
-        self.token = token        # The authentication token
-        self.endpoint = endpoint  # The API endpoint
+
+    def __call__(self) -> ScimUsersClient:
+        """Returns itself.  Provided for backwards compatibility."""
+        return self
 
     def list(self):
-        response = self.client.execute_get_json(f"{self.endpoint}/api/2.0/preview/scim/v2/Users")
+        response = self.client.execute_get_json(f"{self.client.endpoint}/api/2.0/preview/scim/v2/Users")
         users = response.get("Resources", list())
         total_results = response.get("totalResults")
         assert len(users) == int(total_results), f"The totalResults ({total_results}) does not match the number of records ({len(users)}) returned"
         return users
 
     def get_by_id(self, user_id):
-        url = f"{self.endpoint}/api/2.0/preview/scim/v2/Users/{user_id}"
+        url = f"{self.client.endpoint}/api/2.0/preview/scim/v2/Users/{user_id}"
         return self.client.execute_get_json(url)
 
     def get_by_username(self, username):
@@ -30,7 +32,7 @@ class ScimUsersClient:
         return None
 
     def delete_by_id(self, user_id):
-        url = f"{self.endpoint}/api/2.0/preview/scim/v2/Users/{user_id}"
+        url = f"{self.client.endpoint}/api/2.0/preview/scim/v2/Users/{user_id}"
         return self.client.execute_delete(url, expected=204)
 
     def delete_by_username(self, username):
@@ -47,7 +49,7 @@ class ScimUsersClient:
             "groups": [],
             "entitlements": []
         }
-        url = f"{self.endpoint}/api/2.0/preview/scim/v2/Users"
+        url = f"{self.client.endpoint}/api/2.0/preview/scim/v2/Users"
         return self.client.execute_post_json(url, payload, expected=[200, 201])
 
     def to_users_list(self, users):
@@ -95,7 +97,7 @@ class ScimUsersClient:
                 }
             ]
         }
-        url = f"{self.endpoint}/api/2.0/preview/scim/v2/Users/{user_id}"
+        url = f"{self.client.endpoint}/api/2.0/preview/scim/v2/Users/{user_id}"
         return self.client.execute_patch_json(url, payload)    
 
     def remove_entitlement(self, user_id, entitlement):
@@ -113,5 +115,5 @@ class ScimUsersClient:
                 }
             ]
         }
-        url = f"{self.endpoint}/api/2.0/preview/scim/v2/Users/{user_id}"
+        url = f"{self.client.endpoint}/api/2.0/preview/scim/v2/Users/{user_id}"
         return self.client.execute_patch_json(url, payload)

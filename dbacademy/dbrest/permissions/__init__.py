@@ -1,40 +1,32 @@
+from __future__ import annotations
 from dbacademy.dbrest import DBAcademyRestClient
 
 class SqlProxy():
-    def __init__(self, client: DBAcademyRestClient, token: str, endpoint: str):
+    def __init__(self, client: DBAcademyRestClient):
         self.client = client      # Client API exposing other operations to this class
-        self.token = token        # The authentication token
-        self.endpoint = endpoint  # The API endpoint
 
-    def endpoints(self):
         from dbacademy.dbrest.permissions.sql_endpoints import SqlEndpointsClient
-        return SqlEndpointsClient(self.client, self.token, self.endpoint)
+        self.endpoints = SqlEndpointsClient(self.client)
 
-    def queries(self):
         from dbacademy.dbrest.permissions.sql_permissions_client import SqlPermissionsClient
-        return SqlPermissionsClient(self.client, self.token, self.endpoint, "query", "queries")
+        self.queries = SqlPermissionsClient(self.client, "query", "queries")
+        self.dashboards = SqlPermissionsClient(self.client, "dashboard", "dashboards")
+        self.data_sources = SqlPermissionsClient(self.client, "data_source", "data_sources")
+        self.alerts = SqlPermissionsClient(self.client, "alert", "alerts")
 
-    def dashboards(self):
-        from dbacademy.dbrest.permissions.sql_permissions_client import SqlPermissionsClient
-        return SqlPermissionsClient(self.client, self.token, self.endpoint, "dashboard", "dashboards")
+    def __call__(self) -> SqlProxy:
+        """Returns itself.  Provided for backwards compatibility."""
+        return self
 
-    def data_sources(self):
-        from dbacademy.dbrest.permissions.sql_permissions_client import SqlPermissionsClient
-        return SqlPermissionsClient(self.client, self.token, self.endpoint, "data_source", "data_sources")
-
-    def alerts(self):
-        from dbacademy.dbrest.permissions.sql_permissions_client import SqlPermissionsClient
-        return SqlPermissionsClient(self.client, self.token, self.endpoint, "alert", "alerts")
 
 class PermissionsClient():
-    def __init__(self, client: DBAcademyRestClient, token: str, endpoint: str):
+    def __init__(self, client: DBAcademyRestClient):
         self.client = client      # Client API exposing other operations to this class
-        self.token = token        # The authentication token
-        self.endpoint = endpoint  # The API endpoint
+        self.sql = SqlProxy(self.client)
 
-    def jobs(self):
         from dbacademy.dbrest.permissions.jobs import JobsPermissionsClient
-        return JobsPermissionsClient(self.client, self.token, self.endpoint)
+        self.jobs = JobsPermissionsClient(self.client)
 
-    def sql(self):
-        return SqlProxy(self.client, self.token, self.endpoint)
+    def __call__(self) -> PermissionsClient:
+        """Returns itself.  Provided for backwards compatibility."""
+        return self

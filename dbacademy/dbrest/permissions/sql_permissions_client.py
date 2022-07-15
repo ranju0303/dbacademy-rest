@@ -1,12 +1,11 @@
+from __future__ import annotations
 from dbacademy.dbrest import DBAcademyRestClient
 import builtins
 
 class SqlPermissionsClient:
 
-    def __init__(self, client: DBAcademyRestClient, token: str, endpoint: str, singular_obj_type:str, plural_obj_type:str):
+    def __init__(self, client: DBAcademyRestClient, singular_obj_type:str, plural_obj_type:str):
         self.client = client
-        self.token = token
-        self.endpoint = endpoint
         self.max_page_size = 250
         self.valid_objects = ["alerts", "dashboards", "data_sources", "queries"]
         self.valid_permissions = ["CAN_VIEW", "CAN_RUN", "CAN_MANAGE"]
@@ -16,7 +15,11 @@ class SqlPermissionsClient:
         assert plural_obj_type in self.valid_objects, f"Expected \"plural_obj_type\" to be one of {self.valid_objects}, found \"{plural_obj_type}\""
         self.plural_obj_type = plural_obj_type
 
-        self.base_uri = f"{self.endpoint}/api/2.0/preview/sql/permissions"
+        self.base_uri = f"{self.client.endpoint}/api/2.0/preview/sql/permissions"
+
+    def __call__(self) -> SqlPermissionsClient:
+        """Returns itself.  Provided for backwards compatibility."""
+        return self
 
     def _validate_permission_level(self, permission_level:str, allow_none:bool=False):
         if allow_none and permission_level is None: return

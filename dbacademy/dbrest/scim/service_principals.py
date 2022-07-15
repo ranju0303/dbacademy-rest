@@ -1,13 +1,15 @@
+from __future__ import annotations
 from dbacademy.dbrest import DBAcademyRestClient
-
 
 class ScimServicePrincipalsClient:
 
-    def __init__(self, client: DBAcademyRestClient, token: str, endpoint: str):
+    def __init__(self, client: DBAcademyRestClient):
         self.client = client      # Client API exposing other operations to this class
-        self.token = token        # The authentication token
-        self.endpoint = endpoint  # The API endpoint
-        self.base_url = f"{self.endpoint}/api/2.0/preview/scim/v2/ServicePrincipals"
+        self.base_url = f"{self.client.endpoint}/api/2.0/preview/scim/v2/ServicePrincipals"
+
+    def __call__(self) -> ScimServicePrincipalsClient:
+        """Returns itself.  Provided for backwards compatibility."""
+        return self
 
     def list(self):
         response = self.client.execute_get_json(f"{self.base_url}")

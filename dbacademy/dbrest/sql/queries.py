@@ -1,15 +1,18 @@
+from __future__ import annotations
 from dbacademy.dbrest import DBAcademyRestClient
 import builtins
 
 class SqlQueriesClient:
 
-    def __init__(self, client: DBAcademyRestClient, token: str, endpoint: str):
+    def __init__(self, client: DBAcademyRestClient):
         self.client = client
-        self.token = token
-        self.endpoint = endpoint
-        self.base_uri = f"{self.endpoint}/api/2.0/preview/sql/queries"
+        self.base_uri = f"{self.client.endpoint}/api/2.0/preview/sql/queries"
 
         self.max_page_size = 250
+
+    def __call__(self) -> SqlQueriesClient:
+        """Returns itself.  Provided for backwards compatibility."""
+        return self
 
     def list(self, queries=None, page=1):
         if queries is None: queries = builtins.list()

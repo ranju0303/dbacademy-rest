@@ -1,3 +1,4 @@
+from __future__ import annotations
 from dbacademy.dbrest import DBAcademyRestClient
 
 DATA_ACCESS_CONTROL = "DATA_ACCESS_CONTROL"
@@ -5,13 +6,15 @@ SECURITY_POLICIES = [DATA_ACCESS_CONTROL]
 
 class SqlConfigClient:
 
-    def __init__(self, client: DBAcademyRestClient, token: str, endpoint: str):
+    def __init__(self, client: DBAcademyRestClient):
         self.client = client
-        self.token = token
-        self.endpoint = endpoint
+
+    def __call__(self) -> SqlConfigClient:
+        """Returns itself.  Provided for backwards compatibility."""
+        return self
 
     def get(self):
-        return self.client.execute_get_json(f"{self.endpoint}/api/2.0/sql/config/endpoints")
+        return self.client.execute_get_json(f"{self.client.endpoint}/api/2.0/sql/config/endpoints")
 
     def edit(self, security_policy:str, instance_profile_arn:str, data_access_config:dict, sql_configuration_parameters:dict):
 
@@ -38,4 +41,4 @@ class SqlConfigClient:
                 "value": value
             })
 
-        return self.client.execute_post_json(f"{self.endpoint}/api/2.0/sql/config/endpoints")
+        return self.client.execute_post_json(f"{self.client.endpoint}/api/2.0/sql/config/endpoints")

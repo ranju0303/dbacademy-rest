@@ -14,51 +14,51 @@ class TestHighLevelFeatures(unittest.TestCase):
   """
 
   def testWorkspace(self):
-    result = databricks.workspace().ls("/")
+    result = databricks.workspace.ls("/")
     self.assertIsInstance(result, list)
 
   def testClusters(self):
-    result = databricks.clusters().list()
+    result = databricks.clusters.list()
     self.assertIsNotNone(result)
 
   def testJobs(self):
-    result = databricks.jobs().list()
+    result = databricks.jobs.list()
     self.assertIsInstance(result, list)
 
   def testPermissions(self):
-    jobs = databricks.jobs().list()
+    jobs = databricks.jobs.list()
     if not jobs:
       return
     job_id=jobs[0]["job_id"]
-    result = databricks.permissions().jobs().get(job_id)
+    result = databricks.permissions.jobs.get(job_id)
     self.assertIsNotNone(result)
 
   def testPipelines(self):
-    result = databricks.pipelines().list()
+    result = databricks.pipelines.list()
     self.assertIsInstance(result, list)
 
   def testRepos(self):
-    result = databricks.repos().list()
+    result = databricks.repos.list()
     self.assertIsNotNone(result)
 
   def testRuns(self):
-    result = databricks.runs().list()
+    result = databricks.runs.list()
     self.assertIsInstance(result, list)
 
   def testUsers(self):
-    result = databricks.scim().users().list()
+    result = databricks.scim.users.list()
     self.assertIsInstance(result, list)
 
   def testGroups(self):
-    result = databricks.scim().groups().list()
+    result = databricks.scim.groups.list()
     self.assertIsInstance(result, list)
 
   def testSqlWarehouses(self):
-    result = databricks.sql().endpoints().list()
+    result = databricks.sql.endpoints.list()
     self.assertIsInstance(result, list)
 
   def testTokens(self):
-    result = databricks.tokens().list()
+    result = databricks.tokens.list()
     self.assertIsInstance(result, list)
 
 # COMMAND ----------

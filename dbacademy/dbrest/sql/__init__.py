@@ -1,23 +1,21 @@
+from __future__ import annotations
 from dbacademy.dbrest import DBAcademyRestClient
 
 class SqlClient():
-    def __init__(self, client: DBAcademyRestClient, token: str, endpoint: str):
+    def __init__(self, client: DBAcademyRestClient):
         self.client = client      # Client API exposing other operations to this class
-        self.token = token        # The authentication token
-        self.endpoint = endpoint  # The API endpoint
 
-    def config(self):
         from dbacademy.dbrest.sql.config import SqlConfigClient
-        return SqlConfigClient(self.client, self.token, self.endpoint)
+        self.config = SqlConfigClient(self.client)
 
-    def endpoints(self):
         from dbacademy.dbrest.sql.endpoints import SqlEndpointsClient
-        return SqlEndpointsClient(self.client, self.token, self.endpoint)
+        self.endpoints = SqlEndpointsClient(self.client)
 
-    def queries(self):
         from dbacademy.dbrest.sql.queries import SqlQueriesClient
-        return SqlQueriesClient(self.client, self.token, self.endpoint)
+        self.queries = SqlQueriesClient(self.client)
 
-    def permissions(self):
-        from dbacademy.dbrest.sql.permissions import SqlPermissionsClient
-        return SqlPermissionsClient(self.client, self.token, self.endpoint)
+        self.permissions = client.permissions.sql
+
+    def __call__(self) -> SqlClient:
+        """Returns itself.  Provided for backwards compatibility."""
+        return self
