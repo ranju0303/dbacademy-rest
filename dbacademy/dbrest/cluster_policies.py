@@ -11,14 +11,19 @@ class ClusterPolicyClient:
         """Returns itself.  Provided for backwards compatibility."""
         return self
 
-    def get_by_id(self):
-        pass
+    def get_by_id(self, policy_id):
+        return self.client.execute_get_json(f"{self.base_uri}?policy_id={policy_id}")
 
-    def get_by_name(self):
-        pass
+    def get_by_name(self, name):
+        policies = self.list()
+        for policy in policies:
+            if policy.get("name") == name:
+                return policy
+        return None
 
     def list(self):
-        return self.client.execute_get_json(f"{self.base_uri}/list")
+        # Does not support pagination
+        return self.client.execute_get_json(f"{self.base_uri}/list").get("policies", [])
 
     def create(self):
         pass
