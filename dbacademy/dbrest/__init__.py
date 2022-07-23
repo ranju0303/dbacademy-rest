@@ -112,10 +112,8 @@ class DBAcademyRestClient:
     def execute_post(self, url: str, params: dict, expected=200):
         import json
         expected = self.expected_to_list(expected)
-        print(f"Expected: {expected}")
 
         response = self.session.post(url, headers={"Authorization": "Bearer " + self.token}, data=json.dumps(params), timeout=(self.connect_timeout, self.read_timeout))
-        print(f"response.status_code: {response.status_code}")
         assert response.status_code in expected, f"({response.status_code}): {response.text}"
 
         self.throttle_calls()
