@@ -34,6 +34,7 @@ class InstancePoolsClient:
 
         cloud = dbgems.get_cloud()
         if cloud == "AWS":
+            pass
             # definition["aws_attributes"] = {
             #     "availability": "ON_DEMAND",
             #     "zone_id": "us-west-2d",
