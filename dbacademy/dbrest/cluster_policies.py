@@ -58,8 +58,10 @@ class ClusterPolicyClient:
         return self.client.execute_post_json(f"{self.base_uri}/edit", params=params)
 
     def create_or_update(self, name, definition):
+        import json
         policy = self.get_by_name(name)
         print(f"Found {type(policy)}")
+        print(json.dumps(policy, indent=4))
 
         if policy is None:
             self.create(name, definition)
