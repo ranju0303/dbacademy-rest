@@ -48,21 +48,16 @@ class InstancePoolsClient:
 
     def update_by_id(self, instance_pool_id: str, instance_pool_name: str, min_idle_instances: int = None, max_capacity: int = None, idle_instance_autotermination_minutes: int = None):
         assert type(instance_pool_id) == str, f"Expected id to be of type str, found {type(instance_pool_id)}"
-        assert type(instance_pool_name) == str, f"Expected name to be of type str, found {type(instance_pool_name)}"
-        assert type(min_idle_instances) == int, f"Expected min_idle_instances to be of type int, found {type(min_idle_instances)}"
-        assert type(max_capacity) == int, f"Expected max_capacity to be of type int, found {type(max_capacity)}"
-        assert type(idle_instance_autotermination_minutes) == int, f"Expected idle_instance_autotermination_minutes to be of type int, found {type(idle_instance_autotermination_minutes)}"
+        assert instance_pool_name is None or type(instance_pool_name) == str, f"Expected name to be of type str, found {type(instance_pool_name)}"
+        assert min_idle_instances is None or type(min_idle_instances) == int, f"Expected min_idle_instances to be of type int, found {type(min_idle_instances)}"
+        assert max_capacity is None or type(max_capacity) == int, f"Expected max_capacity to be of type int, found {type(max_capacity)}"
+        assert idle_instance_autotermination_minutes is None or type(idle_instance_autotermination_minutes) == int, f"Expected idle_instance_autotermination_minutes to be of type int, found {type(idle_instance_autotermination_minutes)}"
 
         pool = self.get_by_id(instance_pool_id)
 
-        instance_pool_name = pool.get("instance_pool_name") if instance_pool_name is None else instance_pool_name
-        min_idle_instances = pool.get("min_idle_instances") if min_idle_instances is None else min_idle_instances
-        max_capacity = pool.get("max_capacity") if max_capacity is None else max_capacity
-        idle_instance_autotermination_minutes = pool.get("idle_instance_autotermination_minutes") if idle_instance_autotermination_minutes is None else idle_instance_autotermination_minutes
-
         params = {
             "instance_pool_id": instance_pool_id,
-            "instance_pool_name": instance_pool_name,
+            "instance_pool_name": pool.get("instance_pool_name") if instance_pool_name is None else instance_pool_name
         }
 
         if max_capacity is not None: params["max_capacity"] = max_capacity
