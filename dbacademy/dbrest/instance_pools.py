@@ -34,13 +34,13 @@ class InstancePoolsClient:
 
         cloud = dbgems.get_cloud()
         if cloud == "AWS":
-            pass
+            node_type_id = definition.get("node_type_id", "i3.xlarge")
+
             # definition["aws_attributes"] = {
             #     "availability": "ON_DEMAND",
             #     "zone_id": "us-west-2d",
             #     "spot_bid_price_percent": 100
             # }
-            # definition["node_type_id"] = "i3.xlarge"
             # definition["enable_elastic_disk"] = False
 
         elif cloud == "MSA":
@@ -48,7 +48,10 @@ class InstancePoolsClient:
         elif cloud == "GCP":
             pass
         else:
-            raise Exeception(f"The cloud {cloud} is not supported.")
+            raise Exception(f"The cloud {cloud} is not supported.")
+
+        # Initialize defaulted values
+        definition["node_type_id"] = node_type_id
 
         pool = self.client.execute_post_json(f"{self.base_uri}/create", params=definition)
         return self.get_by_id(pool.get("instance_pool_id"))
