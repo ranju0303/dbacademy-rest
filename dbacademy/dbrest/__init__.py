@@ -21,7 +21,7 @@ class DBAcademyRestClient:
         self.connect_timeout = 5  # seconds
 
         backoff_factor = self.connect_timeout
-        retry = Retry(connect=Retry.DEFAULT_BACKOFF_MAX / backoff_factor, backoff_factor=backoff_factor)
+        retry = Retry(connect=Retry.BACKOFF_MAX / backoff_factor, backoff_factor=backoff_factor)
 
         self.session = requests.Session()
         self.session.mount('https://', HTTPAdapter(max_retries=retry))
