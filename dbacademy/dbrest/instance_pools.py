@@ -88,7 +88,7 @@ class InstancePoolsClient:
         return self.get_by_id(instance_pool_id)
 
     def delete_by_id(self, instance_pool_id):
-        return self.client.execute_post_json(f"{self.base_uri}/delete", params={"instance_pool_id": instance_pool_id}, expected=[200,404])
+        return self.client.execute_post_json(f"{self.base_uri}/delete", params={"instance_pool_id": instance_pool_id}, expected=[200, 404])
 
     def delete_by_name(self, name):
         pool = self.get_by_name(name)
