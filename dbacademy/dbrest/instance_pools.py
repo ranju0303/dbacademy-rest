@@ -45,11 +45,16 @@ class InstancePoolsClient:
         if cloud == "AWS":
             node_type_id = definition.get("node_type_id", "i3.xlarge")
 
+            aws_attributes = definition.get("aws_attributes", {})
+            aws_attributes["availability"] = aws_attributes.get("availability", "ON_DEMAND")
+
             # definition["aws_attributes"] = {
             #     "availability": "ON_DEMAND",
             #     "zone_id": "us-west-2d",
             #     "spot_bid_price_percent": 100
             # }
+            definition["aws_attributes"] = aws_attributes
+
             # definition["enable_elastic_disk"] = False
 
         elif cloud == "MSA":
