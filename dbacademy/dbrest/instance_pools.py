@@ -25,9 +25,10 @@ class InstancePoolsClient:
         # Does not support pagination
         return self.client.execute_get_json(f"{self.base_uri}/list").get("instance_pools", [])
 
-    def create(self, name: str, definition: dict, tags: list = None):
+    def create(self, name: str, cluster_type: str, definition: dict, tags: list = None):
         from dbacademy import dbgems
         assert type(name) == str, f"Expected name to be of type str, found {type(name)}"
+        assert cluster_type in ["all-purpose", "job", "dlt"], f"Expected cluster_type to be one of all-purpose, job, dlt, found {type(cluster_type)}"
         assert type(definition) == dict, f"Expected definition to be of type dict, found {type(definition)}"
 
         definition["instance_pool_name"] = name
