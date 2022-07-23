@@ -34,7 +34,9 @@ class ClustersPolicyClient:
             "name": name,
             "definition": json.dumps(definition)
         }
-        return self.client.execute_post_json(f"{self.base_uri}/create", params=params)
+        response = self.client.execute_post_json(f"{self.base_uri}/create", params=params)
+        policy_id = response.get("policy_id")
+        return self.get_by_id(policy_id)
 
     def update_by_name(self, name: str, definition: dict):
         policy = self.get_by_name(name)
@@ -55,16 +57,17 @@ class ClustersPolicyClient:
             "name": name,
             "definition": json.dumps(definition)
         }
-        return self.client.execute_post_json(f"{self.base_uri}/edit", params=params)
+        self.client.execute_post_json(f"{self.base_uri}/edit", params=params)
+        return self.get_by_id(policy_id)
 
     def create_or_update(self, name, definition):
         policy = self.get_by_name(name)
 
         if policy is None:
-            self.create(name, definition)
+            return self.create(name, definition)
         else:
             policy_id = policy.get("policy_id")
-            self.update_by_id(policy_id, name, definition)
+            return self.update_by_id(policy_id, name, definition)
 
     def delete_by_id(self, policy_id):
         return self.client.execute_post_json(f"{self.base_uri}/delete", params={"policy_id": policy_id})
