@@ -2,6 +2,7 @@ from __future__ import annotations
 from dbacademy.dbrest import DBAcademyRestClient
 import builtins
 
+
 class PipelinesClient:
     def __init__(self, client: DBAcademyRestClient):
         self.client = client
@@ -18,7 +19,8 @@ class PipelinesClient:
         while True:
             pipelines.extend(response.get("statuses", builtins.list()))
             next_page_token = response.get("next_page_token")
-            if next_page_token is None: break
+            if next_page_token is None:
+                break
             response = self.client.execute_get_json(f"{self.base_uri}?max_results={max_results}&page_token={next_page_token}")
 
         return pipelines
@@ -50,11 +52,12 @@ class PipelinesClient:
         response = None if pipeline is None else self.delete_by_id(pipeline.get("pipeline_id"))
 
         while self.get_by_name(pipeline_name) is not None:
-            time.sleep(5) # keep blocking until it's gone.
+            time.sleep(5)  # keep blocking until it's gone.
 
         return response
 
-    def existing_to_create(self, pipeline):
+    @staticmethod
+    def existing_to_create(pipeline):
         assert type(pipeline) == dict, f"Expected the \"pipeline\" parameter to be of type dict, found {type(pipeline)}"
 
         spec = pipeline.get("spec")
@@ -62,15 +65,21 @@ class PipelinesClient:
         
         return spec
 
-    def create_from_dict(self, params:dict):
+    def update_from_dict(self, pipeline_id: str, params: dict):
+        uri = f"{self.base_uri}/{pipeline_id}"
+        return self.client.execute_put_json(uri, params)
+
+    def create_from_dict(self, params: dict):
         return self.client.execute_post_json(f"{self.base_uri}", params)
 
     def create(self, name: str, storage: str, target: str, continuous: bool = False, development: bool = True, configuration: dict = None, notebooks: list = None, libraries: list = None, clusters: list = None, min_workers: int = 0, max_workers: int = 0, photon: bool = True):
         
-        if configuration is None: configuration = {}
+        if configuration is None:
+            configuration = {}
         assert type(configuration) == dict, f"Expected configuration to be of type dict, found {type(configuration)}"
 
-        if clusters is None: clusters = []
+        if clusters is None:
+            clusters = []
         assert type(clusters) == list, f"Expected clusters to be of type list, found {type(clusters)}"
 
         if len(clusters) == 0:
@@ -121,5 +130,5 @@ class PipelinesClient:
 
         return self.create_from_dict(params)
 
-    def start_by_id(self, pipeline_id:str):
+    def start_by_id(self, pipeline_id: str):
         return self.client.execute_post_json(f"{self.base_uri}/{pipeline_id}/updates", dict())
