@@ -26,10 +26,28 @@ class InstancePoolsClient:
         return self.client.execute_get_json(f"{self.base_uri}/list").get("instance_pools", [])
 
     def create(self, name: str, definition: dict):
+        from dbacademy import dbgems
         assert type(name) == str, f"Expected name to be of type str, found {type(name)}"
         assert type(definition) == dict, f"Expected definition to be of type dict, found {type(definition)}"
 
         definition["instance_pool_name"] = name
+
+        cloud = dbgems.get_cloud()
+        if cloud == "AWS":
+            # definition["aws_attributes"] = {
+            #     "availability": "ON_DEMAND",
+            #     "zone_id": "us-west-2d",
+            #     "spot_bid_price_percent": 100
+            # }
+            # definition["node_type_id"] = "i3.xlarge"
+            # definition["enable_elastic_disk"] = False
+
+        elif cloud == "MSA":
+            pass
+        elif cloud == "GCP":
+            pass
+        else:
+            raise Exeception(f"The cloud {cloud} is not supported.")
 
         pool = self.client.execute_post_json(f"{self.base_uri}/create", params=definition)
         return self.get_by_id(pool.get("instance_pool_id"))
@@ -68,17 +86,8 @@ class InstancePoolsClient:
         self.client.execute_post_json(f"{self.base_uri}/edit", params=params)
         return self.get_by_id(instance_pool_id)
 
-    def create_or_update(self, name, definition):
-        pool = self.get_by_name(name)
-
-        if pool is None:
-            self.create(name, definition)
-        else:
-            instance_pool_id = pool.get("instance_pool_id")
-            self.update_by_id(instance_pool_id, name, definition)
-
     def delete_by_id(self, instance_pool_id):
-        return self.client.execute_post_json(f"{self.base_uri}/delete", params={"instance_pool_id": instance_pool_id})
+        return self.client.execute_post_json(f"{self.base_uri}/delete", params={"instance_pool_id": instance_pool_id}, expected=[200,404])
 
     def delete_by_name(self, name):
         pool = self.get_by_name(name)
