@@ -12,7 +12,7 @@ class ClusterPolicyClient:
         return self
 
     def get_by_id(self, policy_id):
-        return self.client.execute_get_json(f"{self.base_uri}?policy_id={policy_id}")
+        return self.client.execute_get_json(f"{self.base_uri}/get?policy_id={policy_id}")
 
     def get_by_name(self, name):
         policies = self.list()
