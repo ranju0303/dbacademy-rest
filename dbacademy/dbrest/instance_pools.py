@@ -15,10 +15,10 @@ class InstancePoolsClient:
         return self.client.execute_get_json(f"{self.base_uri}/get?instance_pool_id={instance_pool_id}")
 
     def get_by_name(self, name):
-        policies = self.list()
-        for policy in policies:
-            if policy.get("instance_pool_name") == name:
-                return policy
+        pools = self.list()
+        for pool in pools:
+            if pool.get("instance_pool_name") == name:
+                return pool
         return None
 
     def list(self):
@@ -26,21 +26,18 @@ class InstancePoolsClient:
         return self.client.execute_get_json(f"{self.base_uri}/list").get("instance_pools", [])
 
     def create(self, name: str, definition: dict):
-        import json
         assert type(name) == str, f"Expected name to be of type str, found {type(name)}"
         assert type(definition) == dict, f"Expected definition to be of type dict, found {type(definition)}"
 
-        params = {
-            "instance_pool_name": name,
-            "definition": json.dumps(definition)
-        }
-        return self.client.execute_post_json(f"{self.base_uri}/create", params=params)
+        definition["instance_pool_name"] = name
+
+        return self.client.execute_post_json(f"{self.base_uri}/create", params=definition)
 
     def update_by_name(self, name: str, definition: dict):
-        policy = self.get_by_name(name)
-        assert policy is not None, f"A policy named \"{name}\" was not found."
+        pool = self.get_by_name(name)
+        assert pool is not None, f"A pool named \"{name}\" was not found."
 
-        instance_pool_id = policy.get("instance_pool_id")
+        instance_pool_id = pool.get("instance_pool_id")
 
         return self.update_by_id(instance_pool_id, name, definition)
 
@@ -58,20 +55,20 @@ class InstancePoolsClient:
         return self.client.execute_post_json(f"{self.base_uri}/edit", params=params)
 
     def create_or_update(self, name, definition):
-        policy = self.get_by_name(name)
+        pool = self.get_by_name(name)
 
-        if policy is None:
+        if pool is None:
             self.create(name, definition)
         else:
-            instance_pool_id = policy.get("instance_pool_id")
+            instance_pool_id = pool.get("instance_pool_id")
             self.update_by_id(instance_pool_id, name, definition)
 
     def delete_by_id(self, instance_pool_id):
         return self.client.execute_post_json(f"{self.base_uri}/delete", params={"instance_pool_id": instance_pool_id})
 
     def delete_by_name(self, name):
-        policy = self.get_by_name(name)
-        assert policy is not None, f"A policy named \"{name}\" was not found."
+        pool = self.get_by_name(name)
+        assert pool is not None, f"A pool named \"{name}\" was not found."
 
-        instance_pool_id = policy.get("instance_pool_id")
+        instance_pool_id = pool.get("instance_pool_id")
         return self.delete_by_id(instance_pool_id)
