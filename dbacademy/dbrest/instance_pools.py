@@ -25,12 +25,18 @@ class InstancePoolsClient:
         # Does not support pagination
         return self.client.execute_get_json(f"{self.base_uri}/list").get("instance_pools", [])
 
-    def create(self, name: str, definition: dict):
+    def create(self, name: str, definition: dict, tags: list = None):
         from dbacademy import dbgems
         assert type(name) == str, f"Expected name to be of type str, found {type(name)}"
         assert type(definition) == dict, f"Expected definition to be of type dict, found {type(definition)}"
 
         definition["instance_pool_name"] = name
+        definition["custom_tags"] = []
+
+        for tag in [] if tags is None else tags:
+            definition["custom_tags"].append({
+                {"key": tag[0], "value": tag[1]}
+            })
 
         cloud = dbgems.get_cloud()
         if cloud == "AWS":
