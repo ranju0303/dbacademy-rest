@@ -25,6 +25,31 @@ class InstancePoolsClient:
         # Does not support pagination
         return self.client.execute_get_json(f"{self.base_uri}/list").get("instance_pools", [])
 
+    def create_or_update(self, instance_pool_name: str, idle_instance_autotermination_minutes: int, min_idle_instances: int = 0, max_capacity: int = None, tags: dict = None):
+
+        pool = self.get_by_name(instance_pool_name)
+        tags = [] if tags is None else tags
+
+        if pool is not None:
+            # Issue an update request to the pool
+            instance_pool_id = pool.get("instance_pool_id")
+            self.update_by_id(instance_pool_id=instance_pool_id,
+                              instance_pool_name="Student Pool",
+                              max_capacity=max_capacity,
+                              min_idle_instances=min_idle_instances,
+                              idle_instance_autotermination_minutes=idle_instance_autotermination_minutes)
+        else:
+            # Issue a create request for a new pool
+            definition = {
+                "max_capacity": max_capacity,
+                "min_idle_instances": min_idle_instances,
+                "idle_instance_autotermination_minutes": idle_instance_autotermination_minutes,
+            }
+            result = self.create(instance_pool_name, definition, tags)
+            instance_pool_id = result.get("instance_pool_id")
+
+        return self.get_by_id(instance_pool_id)
+
     def create(self, name: str, definition: dict, tags: list = None):
         from dbacademy import dbgems
         assert type(name) == str, f"Expected name to be of type str, found {type(name)}"
@@ -41,31 +66,22 @@ class InstancePoolsClient:
             custom_tags.append(key_value)
         definition["custom_tags"] = custom_tags
 
-        cloud = dbgems.get_cloud()
-        if cloud == "AWS":
-            node_type_id = definition.get("node_type_id", "i3.xlarge")
+        if dbgems.get_cloud() == "AWS":
+            definition["node_type_id"] = definition.get("node_type_id", "i3.xlarge")
 
             aws_attributes = definition.get("aws_attributes", {})
             aws_attributes["availability"] = aws_attributes.get("availability", "ON_DEMAND")
 
-            # definition["aws_attributes"] = {
-            #     "availability": "ON_DEMAND",
-            #     "zone_id": "us-west-2d",
-            #     "spot_bid_price_percent": 100
-            # }
             definition["aws_attributes"] = aws_attributes
 
-            # definition["enable_elastic_disk"] = False
+        elif dbgems.get_cloud() == "MSA":
+            definition["node_type_id"] = definition.get("node_type_id", "Standard_DS3_v2")
 
-        elif cloud == "MSA":
-            pass
-        elif cloud == "GCP":
-            pass
+        elif dbgems.get_cloud() == "GCP":
+            definition["node_type_id"] = definition.get("node_type_id", "n1-standard-4")
+
         else:
-            raise Exception(f"The cloud {cloud} is not supported.")
-
-        # Initialize defaulted values
-        definition["node_type_id"] = node_type_id
+            raise Exception(f"The cloud {dbgems.get_cloud()} is not supported.")
 
         pool = self.client.execute_post_json(f"{self.base_uri}/create", params=definition)
         return self.get_by_id(pool.get("instance_pool_id"))
