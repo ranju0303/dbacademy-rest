@@ -23,7 +23,7 @@ class InstancePoolsClient:
 
     def list(self):
         # Does not support pagination
-        return self.client.execute_get_json(f"{self.base_uri}/list").get("policies", [])
+        return self.client.execute_get_json(f"{self.base_uri}/list") #.get("policies", [])
 
     def create(self, name: str, definition: dict):
         import json
