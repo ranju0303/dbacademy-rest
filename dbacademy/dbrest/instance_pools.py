@@ -69,7 +69,8 @@ class InstancePoolsClient:
         if min_idle_instances is not None: params["min_idle_instances"] = min_idle_instances
         if idle_instance_autotermination_minutes is not None: params["idle_instance_autotermination_minutes"] = idle_instance_autotermination_minutes
 
-        return self.client.execute_post_json(f"{self.base_uri}/edit", params=params)
+        self.client.execute_post_json(f"{self.base_uri}/edit", params=params)
+        return instance_pool_id
 
     def create_or_update(self, name, definition):
         pool = self.get_by_name(name)
