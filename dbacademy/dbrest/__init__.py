@@ -21,7 +21,7 @@ class DBAcademyRestClient:
         self.connect_timeout = 5  # seconds
 
         backoff_factor = self.connect_timeout
-        retry = Retry(connect=Retry.BACKOFF_MAX / backoff_factor, backoff_factor=backoff_factor)
+        retry = Retry(connect=Retry.DEFAULT_BACKOFF_MAX / backoff_factor, backoff_factor=backoff_factor)
 
         self.session = requests.Session()
         self.session.mount('https://', HTTPAdapter(max_retries=retry))
@@ -43,40 +43,43 @@ class DBAcademyRestClient:
             print(f"** WARNING ** Requests are being throttled by {self.throttle} second{s} per request.")
 
         from dbacademy.dbrest.clusters import ClustersClient
-        self.clusters=ClustersClient(self)
+        self.clusters = ClustersClient(self)
+
+        from dbacademy.dbrest.cluster_policies import ClusterPolicyClient
+        self.cluster_policies = ClusterPolicyClient(self)
 
         from dbacademy.dbrest.jobs import JobsClient
-        self.jobs=JobsClient(self)
+        self.jobs = JobsClient(self)
 
         from dbacademy.dbrest.permissions import PermissionsClient
-        self.permissions=PermissionsClient(self)
+        self.permissions = PermissionsClient(self)
 
         from dbacademy.dbrest.pipelines import PipelinesClient
-        self.pipelines=PipelinesClient(self)
+        self.pipelines = PipelinesClient(self)
 
         from dbacademy.dbrest.repos import ReposClient
-        self.repos=ReposClient(self)
+        self.repos = ReposClient(self)
 
         from dbacademy.dbrest.runs import RunsClient
-        self.runs=RunsClient(self)
+        self.runs = RunsClient(self)
 
         from dbacademy.dbrest.scim import ScimClient
-        self.scim=ScimClient(self)
+        self.scim = ScimClient(self)
 
         from dbacademy.dbrest.sql import SqlClient
-        self.sql=SqlClient(self)
+        self.sql = SqlClient(self)
 
         from dbacademy.dbrest.tokens import TokensClient
-        self.tokens=TokensClient(self)
+        self.tokens = TokensClient(self)
 
         from dbacademy.dbrest.token_management import TokenManagementClient
-        self.token_management=TokenManagementClient(self)
+        self.token_management = TokenManagementClient(self)
 
         from dbacademy.dbrest.uc import UcClient
-        self.uc=UcClient(self)
+        self.uc = UcClient(self)
 
         from dbacademy.dbrest.workspace import WorkspaceClient
-        self.workspace=WorkspaceClient(self)
+        self.workspace = WorkspaceClient(self)
 
     def help(self):
         methods = [func for func in dir(self) if callable(getattr(self, func)) and not func.startswith("__")]
@@ -143,11 +146,11 @@ class DBAcademyRestClient:
         self.throttle_calls()
         return response
 
-    def execute_delete_json(self, url: str, expected=[200, 404]) -> dict:
+    def execute_delete_json(self, url: str, expected=(200, 404)) -> dict:
         response = self.execute_delete(url, expected)
         return response.json()
 
-    def execute_delete(self, url: str, expected=[200, 404]):
+    def execute_delete(self, url: str, expected=(200, 404)):
         expected = self.expected_to_list(expected)
 
         response = self.session.delete(url, headers={"Authorization": f"Bearer {self.token}"}, timeout=(self.connect_timeout, self.read_timeout))
@@ -160,5 +163,6 @@ class DBAcademyRestClient:
     def expected_to_list(expected) -> list:
         if type(expected) == str: expected = int(expected)
         if type(expected) == int: expected = [expected]
-        assert type(expected) == list, f"The parameter was expected to be of type str, int or list, found {type(expected)}"
+        if type(expected) == tuple: expected = [expected]
+        assert type(expected) == list, f"The parameter was expected to be of type str, int, tuple or list, found {type(expected)}"
         return expected
