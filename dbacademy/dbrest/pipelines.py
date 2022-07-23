@@ -66,22 +66,63 @@ class PipelinesClient:
         return spec
 
     def update_from_dict(self, pipeline_id: str, params: dict):
-        # import json
-        # print("-"*80)
-        # print("** UPDATE **")
-        # print(json.dumps(params, indent=4))
-        # print("-"*80)
         return self.client.execute_put_json(f"{self.base_uri}/{pipeline_id}", params)
 
     def create_from_dict(self, params: dict):
-        # import json
-        # print("-"*80)
-        # print("** CREATE **")
-        # print(json.dumps(params, indent=4))
-        # print("-"*80)
         return self.client.execute_post_json(f"{self.base_uri}", params)
 
+    def create_or_update(self, name: str, storage: str, target: str, continuous: bool = False, development: bool = True, configuration: dict = None, notebooks: list = None, libraries: list = None, clusters: list = None, min_workers: int = 0, max_workers: int = 0, photon: bool = True, pipeline_id=None):
+        params = self.to_dict(name=name,
+                              storage=storage,
+                              target=target,
+                              continuous=continuous,
+                              development=development,
+                              configuration=configuration,
+                              notebooks=notebooks,
+                              libraries=libraries,
+                              clusters=clusters,
+                              min_workers=min_workers,
+                              max_workers=max_workers,
+                              photon=photon)
+
+        if pipeline_id is not None:
+            self.update_from_dict(pipeline_id, params)
+        else:
+            self.create_from_dict(params)
+
+
+    def update(self, pipeline_id: str, name: str, storage: str, target: str, continuous: bool = False, development: bool = True, configuration: dict = None, notebooks: list = None, libraries: list = None, clusters: list = None, min_workers: int = 0, max_workers: int = 0, photon: bool = True):
+        params = self.to_dict(name=name,
+                              storage=storage,
+                              target=target,
+                              continuous=continuous,
+                              development=development,
+                              configuration=configuration,
+                              notebooks=notebooks,
+                              libraries=libraries,
+                              clusters=clusters,
+                              min_workers=min_workers,
+                              max_workers=max_workers,
+                              photon=photon)
+        return self.update_from_dict(pipeline_id, params)
+
     def create(self, name: str, storage: str, target: str, continuous: bool = False, development: bool = True, configuration: dict = None, notebooks: list = None, libraries: list = None, clusters: list = None, min_workers: int = 0, max_workers: int = 0, photon: bool = True):
+        params = self.to_dict(name=name,
+                              storage=storage,
+                              target=target,
+                              continuous=continuous,
+                              development=development,
+                              configuration=configuration,
+                              notebooks=notebooks,
+                              libraries=libraries,
+                              clusters=clusters,
+                              min_workers=min_workers,
+                              max_workers=max_workers,
+                              photon=photon)
+        return self.create_from_dict(params)
+
+    @staticmethod
+    def to_dict(name: str, storage: str, target: str, continuous: bool = False, development: bool = True, configuration: dict = None, notebooks: list = None, libraries: list = None, clusters: list = None, min_workers: int = 0, max_workers: int = 0, photon: bool = True):
         
         if configuration is None:
             configuration = {}
@@ -137,7 +178,7 @@ class PipelinesClient:
         params["development"] = development
         params["photon"] = photon
 
-        return self.create_from_dict(params)
+        return params
 
     def start_by_id(self, pipeline_id: str):
         return self.client.execute_post_json(f"{self.base_uri}/{pipeline_id}/updates", dict())
