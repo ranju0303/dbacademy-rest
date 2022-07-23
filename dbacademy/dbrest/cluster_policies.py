@@ -29,6 +29,7 @@ class ClustersPolicyClient:
         import json
         assert type(name) == str, f"Expected name to be of type str, found {type(name)}"
         assert type(definition) == dict, f"Expected definition to be of type dict, found {type(definition)}"
+        # assert cluster_type in ["all-purpose", "job", "dlt"], f"Expected cluster_type to be one of all-purpose, job, dlt, found {type(cluster_type)}"
 
         params = {
             "name": name,
