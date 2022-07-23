@@ -31,12 +31,15 @@ class InstancePoolsClient:
         assert type(definition) == dict, f"Expected definition to be of type dict, found {type(definition)}"
 
         definition["instance_pool_name"] = name
-        definition["custom_tags"] = []
 
+        custom_tags = []
         for tag in [] if tags is None else tags:
-            definition["custom_tags"].append({
-                {"key": tag[0], "value": tag[1]}
-            })
+            key_value = {
+                "key": tag[0],
+                "value": tag[1]
+            }
+            custom_tags.append(key_value)
+        definition["custom_tags"] = custom_tags
 
         cloud = dbgems.get_cloud()
         if cloud == "AWS":
