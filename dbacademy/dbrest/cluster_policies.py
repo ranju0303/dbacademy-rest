@@ -18,7 +18,7 @@ class ClustersPolicyClient:
         policies = self.list()
         for policy in policies:
             if policy.get("name") == name:
-                return policy
+                return self.get_by_id(policy.get("policy_id"))
         return None
 
     def list(self):
