@@ -36,17 +36,39 @@ class ClusterPolicyClient:
         }
         return self.client.execute_post_json(f"{self.base_uri}/create", params=params)
 
-    def update(self):
-        pass  # create
+    def update_by_name(self, name: str, definition: dict):
+        policy = self.get_by_name(name)
+        assert policy is not None, f"A policy named \"{name}\" was not found."
 
-    def delete_by_id(self):
-        pass
+        policy_id = policy.get("policy_id")
 
-    def delete_by_name(self, name):
-        pass
+        return self.update_by_id(policy_id, name, definition)
+
+    def update_by_id(self, policy_id: str, name: str, definition: dict):
+        import json
+        assert type(id) == str, f"Expected id to be of type str, found {type(id)}"
+        assert type(name) == str, f"Expected name to be of type str, found {type(name)}"
+        assert type(definition) == dict, f"Expected definition to be of type dict, found {type(definition)}"
+
+        params = {
+            "policy_id": policy_id,
+            "name": name,
+            "definition": json.dumps(definition)
+        }
+        return self.client.execute_post_json(f"{self.base_uri}/edit", params=params)
 
     def create_or_update(self):
         pass
+
+    def delete_by_id(self, policy_id):
+        return self.client.execute_post_json(f"{self.base_uri}/delete", params={"policy_id": policy_id})
+
+    def delete_by_name(self, name):
+        policy = self.get_by_name(name)
+        assert policy is not None, f"A policy named \"{name}\" was not found."
+
+        policy_id = policy.get("policy_id")
+        return self.delete_by_id(policy_id)
 
     # def list(self):
     #     return self.client.execute_get_json(f"{self.client.endpoint}/api/2.0/clusters/list")
