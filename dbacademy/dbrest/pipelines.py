@@ -37,7 +37,7 @@ class PipelinesClient:
     def get_by_name(self, pipeline_name):
         for pipeline in self.list():
             if pipeline.get("name") == pipeline_name:
-                return pipeline
+                return self.get_by_id(pipeline.get("pipeline_id"))
         return None
 
     def get_update_by_id(self, pipeline_id, update_id):
