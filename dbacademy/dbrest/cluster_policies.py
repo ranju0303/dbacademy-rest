@@ -26,7 +26,7 @@ class ClusterPolicyClient:
         return self.client.execute_get_json(f"{self.base_uri}/list").get("policies", [])
 
     def create(self, name: str, definition: dict):
-        assert type(name) == dict, f"Expected name to be of type str, found {type(name)}"
+        assert type(name) == str, f"Expected name to be of type str, found {type(name)}"
         assert type(definition) == dict, f"Expected definition to be of type dict, found {type(definition)}"
 
         params = {
