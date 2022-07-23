@@ -66,10 +66,17 @@ class PipelinesClient:
         return spec
 
     def update_from_dict(self, pipeline_id: str, params: dict):
-        uri = f"{self.base_uri}/{pipeline_id}"
-        return self.client.execute_put_json(uri, params)
+        import json
+        print("-"*80)
+        print(json.dumps(params), indent=4)
+        print("-"*80)
+        return self.client.execute_put_json(f"{self.base_uri}/{pipeline_id}", params)
 
     def create_from_dict(self, params: dict):
+        import json
+        print("-"*80)
+        print(json.dumps(params), indent=4)
+        print("-"*80)
         return self.client.execute_post_json(f"{self.base_uri}", params)
 
     def create(self, name: str, storage: str, target: str, continuous: bool = False, development: bool = True, configuration: dict = None, notebooks: list = None, libraries: list = None, clusters: list = None, min_workers: int = 0, max_workers: int = 0, photon: bool = True):
