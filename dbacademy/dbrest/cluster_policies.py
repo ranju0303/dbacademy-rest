@@ -59,6 +59,7 @@ class ClusterPolicyClient:
 
     def create_or_update(self, name, definition):
         policy = self.get_by_name(name)
+        print(f"Found {type(policy)}")
 
         if policy is None:
             self.create(name, definition)
