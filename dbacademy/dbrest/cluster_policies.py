@@ -26,19 +26,23 @@ class ClusterPolicyClient:
         return self.client.execute_get_json(f"{self.base_uri}/list").get("policies", [])
 
     def create(self, name: str, definition: dict):
+        import json
         assert type(name) == str, f"Expected name to be of type str, found {type(name)}"
         assert type(definition) == dict, f"Expected definition to be of type dict, found {type(definition)}"
 
         params = {
             "name": name,
-            "definition": definition
+            "definition": json.dumps(definition)
         }
         return self.client.execute_post_json(f"{self.base_uri}/create", params=params)
 
     def update(self):
         pass  # create
 
-    def delete(self):
+    def delete_by_id(self):
+        pass
+
+    def delete_by_name(self, name):
         pass
 
     def create_or_update(self):
