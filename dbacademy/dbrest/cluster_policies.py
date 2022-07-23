@@ -46,7 +46,7 @@ class ClusterPolicyClient:
 
     def update_by_id(self, policy_id: str, name: str, definition: dict):
         import json
-        assert type(id) == str, f"Expected id to be of type str, found {type(id)}"
+        assert type(policy_id) == str, f"Expected id to be of type str, found {type(policy_id)}"
         assert type(name) == str, f"Expected name to be of type str, found {type(name)}"
         assert type(definition) == dict, f"Expected definition to be of type dict, found {type(definition)}"
 
@@ -58,10 +58,7 @@ class ClusterPolicyClient:
         return self.client.execute_post_json(f"{self.base_uri}/edit", params=params)
 
     def create_or_update(self, name, definition):
-        import json
         policy = self.get_by_name(name)
-        print(f"Found {type(policy)}")
-        print(json.dumps(policy, indent=4))
 
         if policy is None:
             self.create(name, definition)
