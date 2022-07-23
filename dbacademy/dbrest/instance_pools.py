@@ -88,11 +88,12 @@ class InstancePoolsClient:
         return self.get_by_id(instance_pool_id)
 
     def delete_by_id(self, instance_pool_id):
-        return self.client.execute_post_json(f"{self.base_uri}/delete", params={"instance_pool_id": instance_pool_id}, expected=[200, 404])
+        self.client.execute_post_json(f"{self.base_uri}/delete", params={"instance_pool_id": instance_pool_id}, expected=[200, 404])
+        return None
 
     def delete_by_name(self, name):
         pool = self.get_by_name(name)
-        assert pool is not None, f"A pool named \"{name}\" was not found."
+        if pool is None: return None
 
         instance_pool_id = pool.get("instance_pool_id")
         return self.delete_by_id(instance_pool_id)
