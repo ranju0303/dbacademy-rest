@@ -45,8 +45,11 @@ class DBAcademyRestClient:
         from dbacademy.dbrest.clusters import ClustersClient
         self.clusters = ClustersClient(self)
 
-        from dbacademy.dbrest.cluster_policies import ClusterPolicyClient
-        self.cluster_policies = ClusterPolicyClient(self)
+        from dbacademy.dbrest.cluster_policies import ClustersPolicyClient
+        self.cluster_policies = ClustersPolicyClient(self)
+
+        from dbacademy.dbrest.instance_pools import InstancePoolsClient
+        self.instance_pools = InstancePoolsClient(self)
 
         from dbacademy.dbrest.jobs import JobsClient
         self.jobs = JobsClient(self)

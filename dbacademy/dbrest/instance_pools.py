@@ -2,22 +2,22 @@ from __future__ import annotations
 from dbacademy.dbrest import DBAcademyRestClient
 
 
-class ClustersPolicyClient:
+class InstancePoolsClient:
     def __init__(self, client: DBAcademyRestClient):
         self.client = client
-        self.base_uri = f"{self.client.endpoint}/api/2.0/policies/clusters"
+        self.base_uri = f"{self.client.endpoint}/api/2.0/instance-pools"
 
-    def __call__(self) -> ClustersPolicyClient:
+    def __call__(self) -> InstancePoolsClient:
         """Returns itself.  Provided for backwards compatibility."""
         return self
 
-    def get_by_id(self, policy_id):
-        return self.client.execute_get_json(f"{self.base_uri}/get?policy_id={policy_id}")
+    def get_by_id(self, instance_pool_id):
+        return self.client.execute_get_json(f"{self.base_uri}/get?instance_pool_id={instance_pool_id}")
 
     def get_by_name(self, name):
         policies = self.list()
         for policy in policies:
-            if policy.get("name") == name:
+            if policy.get("instance_pool_name") == name:
                 return policy
         return None
 
@@ -31,7 +31,7 @@ class ClustersPolicyClient:
         assert type(definition) == dict, f"Expected definition to be of type dict, found {type(definition)}"
 
         params = {
-            "name": name,
+            "instance_pool_name": name,
             "definition": json.dumps(definition)
         }
         return self.client.execute_post_json(f"{self.base_uri}/create", params=params)
@@ -40,19 +40,19 @@ class ClustersPolicyClient:
         policy = self.get_by_name(name)
         assert policy is not None, f"A policy named \"{name}\" was not found."
 
-        policy_id = policy.get("policy_id")
+        instance_pool_id = policy.get("instance_pool_id")
 
-        return self.update_by_id(policy_id, name, definition)
+        return self.update_by_id(instance_pool_id, name, definition)
 
-    def update_by_id(self, policy_id: str, name: str, definition: dict):
+    def update_by_id(self, instance_pool_id: str, name: str, definition: dict):
         import json
-        assert type(policy_id) == str, f"Expected id to be of type str, found {type(policy_id)}"
+        assert type(instance_pool_id) == str, f"Expected id to be of type str, found {type(instance_pool_id)}"
         assert type(name) == str, f"Expected name to be of type str, found {type(name)}"
         assert type(definition) == dict, f"Expected definition to be of type dict, found {type(definition)}"
 
         params = {
-            "policy_id": policy_id,
-            "name": name,
+            "instance_pool_id": instance_pool_id,
+            "instance_pool_name": name,
             "definition": json.dumps(definition)
         }
         return self.client.execute_post_json(f"{self.base_uri}/edit", params=params)
@@ -63,15 +63,15 @@ class ClustersPolicyClient:
         if policy is None:
             self.create(name, definition)
         else:
-            policy_id = policy.get("policy_id")
-            self.update_by_id(policy_id, name, definition)
+            instance_pool_id = policy.get("instance_pool_id")
+            self.update_by_id(instance_pool_id, name, definition)
 
-    def delete_by_id(self, policy_id):
-        return self.client.execute_post_json(f"{self.base_uri}/delete", params={"policy_id": policy_id})
+    def delete_by_id(self, instance_pool_id):
+        return self.client.execute_post_json(f"{self.base_uri}/delete", params={"instance_pool_id": instance_pool_id})
 
     def delete_by_name(self, name):
         policy = self.get_by_name(name)
         assert policy is not None, f"A policy named \"{name}\" was not found."
 
-        policy_id = policy.get("policy_id")
-        return self.delete_by_id(policy_id)
+        instance_pool_id = policy.get("instance_pool_id")
+        return self.delete_by_id(instance_pool_id)
