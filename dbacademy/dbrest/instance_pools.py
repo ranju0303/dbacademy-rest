@@ -31,7 +31,8 @@ class InstancePoolsClient:
 
         definition["instance_pool_name"] = name
 
-        return self.client.execute_post_json(f"{self.base_uri}/create", params=definition)
+        pool = self.client.execute_post_json(f"{self.base_uri}/create", params=definition)
+        return self.get_by_id(pool.get("instance_pool_id"))
 
     def update_by_name(self, instance_pool_name: str, min_idle_instances: int = None, max_capacity: int = None, idle_instance_autotermination_minutes: int = None):
 
