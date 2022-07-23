@@ -86,9 +86,9 @@ class PipelinesClient:
                               photon=photon)
 
         if pipeline_id is not None:
-            self.update_from_dict(pipeline_id, params)
+            return self.update_from_dict(pipeline_id, params)
         else:
-            self.create_from_dict(params)
+            return self.create_from_dict(params)
 
 
     def update(self, pipeline_id: str, name: str, storage: str, target: str, continuous: bool = False, development: bool = True, configuration: dict = None, notebooks: list = None, libraries: list = None, clusters: list = None, min_workers: int = 0, max_workers: int = 0, photon: bool = True):
