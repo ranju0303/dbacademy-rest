@@ -75,11 +75,14 @@ class PipelinesClient:
         return self.client.execute_post_json(f"{self.base_uri}", params)
 
     def create_or_update(self, name: str, storage: str, target: str, continuous: bool = False, development: bool = True, configuration: dict = None, notebooks: list = None, libraries: list = None, clusters: list = None, min_workers: int = 0, max_workers: int = 0, photon: bool = True, pipeline_id=None):
-
+        import json
         print(f"Create or Update: {libraries}")
 
         if pipeline_id is not None:
             pipeline = self.get_by_id(pipeline_id)
+            print("-"*80)
+            json.dumps(pipeline, indent=4)
+            print("-"*80)
             if libraries is None: libraries = pipeline.get("libraries")
 
         print(f"Create or Update: {libraries}")
