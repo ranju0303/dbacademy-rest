@@ -173,7 +173,7 @@ class PipelinesClient:
         params["storage"] = storage
         params["configuration"] = configuration
         params["clusters"] = clusters
-        params["libraries"] = libraries
+        if libraries is not None: params["libraries"] = libraries
         params["target"] = target
         params["continuous"] = continuous
         params["development"] = development
