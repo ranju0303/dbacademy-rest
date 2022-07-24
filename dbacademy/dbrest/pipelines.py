@@ -159,7 +159,7 @@ class PipelinesClient:
                     }    
                 })
 
-        assert type(libraries) == list, f"Expected libraries to be of type list, found {type(libraries)}"
+        assert libraries is None or type(libraries) == list, f"Expected libraries to be of type list, found {type(libraries)}"
         for library in libraries:
             notebook = library.get("notebook")
             assert notebook is not None, f"The library's notebook parameter must be specified."
