@@ -66,6 +66,9 @@ class PipelinesClient:
         return spec
 
     def update_from_dict(self, pipeline_id: str, params: dict):
+        import json
+        print(json.dumps(params, indent=4))
+        
         return self.client.execute_put_json(f"{self.base_uri}/{pipeline_id}", params)
 
     def create_from_dict(self, params: dict):
