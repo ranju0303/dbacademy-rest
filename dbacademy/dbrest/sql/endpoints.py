@@ -53,8 +53,16 @@ class SqlEndpointsClient:
                 return endpoint
         return None
 
-    def delete(self, endpoint_id):
-        return self.client.execute_delete_json(f"{self.client.endpoint}/api/2.0/sql/endpoints/{endpoint_id}")
+    def delete_by_id(self, endpoint_id):
+        self.client.execute_delete_json(f"{self.client.endpoint}/api/2.0/sql/endpoints/{endpoint_id}")
+        return None
+
+    def delete_by_name(self, name):
+        endpoint = self.get_by_name(name)
+        if endpoint:
+            self.delete_by_id(endpoint.get("endpoint_id"))
+            
+        return None
 
     def list(self):
         result = self.client.execute_get_json(f"{self.client.endpoint}/api/2.0/sql/endpoints")
