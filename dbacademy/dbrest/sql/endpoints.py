@@ -29,23 +29,25 @@ CLUSTER_SIZES = [CLUSTER_SIZE_2X_SMALL,
                  CLUSTER_SIZE_3X_LARGE, 
                  CLUSTER_SIZE_4X_LARGE]
 
+
 class SqlEndpointsClient:
 
     def __init__(self, client: DBAcademyRestClient):
         self.client = client
+        self.base_uri = f"{self.client.endpoint}/api/2.0/warehouses"
 
     def __call__(self) -> SqlEndpointsClient:
         """Returns itself.  Provided for backwards compatibility."""
         return self
 
     def start(self, endpoint_id):
-        return self.client.execute_post_json(f"{self.client.endpoint}/api/2.0/sql/endpoints/{endpoint_id}/start", {})
+        return self.client.execute_post_json(f"{self.base_uri}/{endpoint_id}/start", {})
 
     def stop(self, endpoint_id):
-        return self.client.execute_post_json(f"{self.client.endpoint}/api/2.0/sql/endpoints/{endpoint_id}/stop", {})
+        return self.client.execute_post_json(f"{self.base_uri}/{endpoint_id}/stop", {})
 
     def get_by_id(self, endpoint_id):
-        return self.client.execute_get_json(f"{self.client.endpoint}/api/2.0/sql/endpoints/{endpoint_id}")
+        return self.client.execute_get_json(f"{self.base_uri}/{endpoint_id}")
 
     def get_by_name(self, name):
         for endpoint in self.list():
@@ -54,7 +56,7 @@ class SqlEndpointsClient:
         return None
 
     def delete_by_id(self, endpoint_id):
-        self.client.execute_delete_json(f"{self.client.endpoint}/api/2.0/sql/endpoints/{endpoint_id}")
+        self.client.execute_delete_json(f"{self.base_uri}/{endpoint_id}")
         return None
 
     def delete_by_name(self, name):
@@ -65,20 +67,106 @@ class SqlEndpointsClient:
         return None
 
     def list(self):
-        result = self.client.execute_get_json(f"{self.client.endpoint}/api/2.0/sql/endpoints")
+        result = self.client.execute_get_json(f"{self.base_uri}")
         return [] if "endpoints" not in result else result.get("endpoints")
 
-    def create(self, name:str,
-                     cluster_size:str,
-                     enable_serverless_compute:bool,
-                     min_num_clusters:int = 1,
-                     max_num_clusters:int = 1,
-                     auto_stop_mins:int = 120,
-                     enable_photon:bool = True,
-                     spot_instance_policy:str = RELIABILITY_OPTIMIZED,
-                     channel:str = CHANNEL_NAME_CURRENT,
-                     tags:dict = dict()):
+    def create_or_update(self,
+                         name: str,
+                         cluster_size: str,
+                         enable_serverless_compute: bool,
+                         min_num_clusters: int = 1,
+                         max_num_clusters: int = 1,
+                         auto_stop_mins: int = 120,
+                         enable_photon: bool = True,
+                         spot_instance_policy: str = RELIABILITY_OPTIMIZED,
+                         channel: str = CHANNEL_NAME_CURRENT,
+                         tags: dict = None):
 
+        endpoint = self.get_by_name(name)
+
+        if endpoint is None:
+            return self.create(
+               name=name,
+               cluster_size=cluster_size,
+               enable_serverless_compute=enable_serverless_compute,
+               min_num_clusters=min_num_clusters,
+               max_num_clusters=max_num_clusters,
+               auto_stop_mins=auto_stop_mins,
+               enable_photon=enable_photon,
+               spot_instance_policy=spot_instance_policy,
+               channel=channel,
+               tags=tags)
+        else:
+            return self.update(
+               id=endpoint.get("id"),
+               name=name,
+               cluster_size=cluster_size,
+               enable_serverless_compute=enable_serverless_compute,
+               min_num_clusters=min_num_clusters,
+               max_num_clusters=max_num_clusters,
+               auto_stop_mins=auto_stop_mins,
+               enable_photon=enable_photon,
+               spot_instance_policy=spot_instance_policy,
+               channel=channel,
+               tags=tags)
+
+    def update(self,
+               id: str,
+               name: str,
+               cluster_size: str,
+               enable_serverless_compute: bool,
+               min_num_clusters: int = 1,
+               max_num_clusters: int = 1,
+               auto_stop_mins: int = 120,
+               enable_photon: bool = True,
+               spot_instance_policy: str = RELIABILITY_OPTIMIZED,
+               channel: str = CHANNEL_NAME_CURRENT,
+               tags: dict = None):
+
+        assert spot_instance_policy in SPOT_POLICIES, f"Expected spot_instance_policy to be one of {SPOT_POLICIES}, found {spot_instance_policy}"
+        assert channel in CHANNELS, f"Expected channel to be one of {CHANNELS}, found {channel}"
+        assert cluster_size in CLUSTER_SIZES, f"Expected cluster_size to be one of {CLUSTER_SIZES}, found {cluster_size}"
+
+        params = {
+            "id": id
+        }
+
+        if name is not None: params["name"] = name,
+        if cluster_size is not None: params["cluster_size"] = cluster_size,
+        if min_num_clusters is not None: params["min_num_clusters"] = min_num_clusters,
+        if max_num_clusters is not None: params["max_num_clusters"] = max_num_clusters,
+        if auto_stop_mins is not None: params["auto_stop_mins"] = auto_stop_mins,
+        if spot_instance_policy is not None: params["spot_instance_policy"] = spot_instance_policy,
+        if enable_photon is not None: params["enable_photon"] = enable_photon,
+        if enable_serverless_compute is not None: params["enable_serverless_compute"] = enable_serverless_compute,
+        if channel is not None: params["channel"] = {"name": channel}
+
+        if tags is not None:
+            params["tags"] = {
+                "custom_tags": []
+            }
+            for item in tags.items():
+                custom_tags = params.get("tags").get("custom_tags", [])
+                custom_tags.append({
+                    "key": item[0],
+                    "value": item[1]
+                })
+
+        return self.client.execute_post_json(f"{self.base_uri}/edit", params)
+
+    def create(self,
+               name: str,
+               cluster_size: str,
+               enable_serverless_compute: bool,
+               min_num_clusters: int = 1,
+               max_num_clusters: int = 1,
+               auto_stop_mins: int = 120,
+               enable_photon: bool = True,
+               spot_instance_policy: str = RELIABILITY_OPTIMIZED,
+               channel: str = CHANNEL_NAME_CURRENT,
+               tags: dict = None):
+
+        tags = dict() if tags is None else tags
         assert spot_instance_policy in SPOT_POLICIES, f"Expected spot_instance_policy to be one of {SPOT_POLICIES}, found {spot_instance_policy}"
         assert channel in CHANNELS, f"Expected channel to be one of {CHANNELS}, found {channel}"
         assert cluster_size in CLUSTER_SIZES, f"Expected cluster_size to be one of {CLUSTER_SIZES}, found {cluster_size}"
@@ -100,26 +188,27 @@ class SqlEndpointsClient:
             },
         }
 
-        for key in tags:
-            value = tags[key]
-            params.get("tags").get("custom_tags").append({
-                "key": key,
-                "value": value
+        for item in tags.items():
+            custom_tags = params.get("tags").get("custom_tags", [])
+            custom_tags.append({
+                "key": item[0],
+                "value": item[1]
             })
 
-        return self.client.execute_post_json(f"{self.client.endpoint}/api/2.0/sql/endpoints", params)
+        return self.client.execute_post_json(f"{self.base_uri}", params)
 
-    def edit(self, endpoint_id:str,
-                   name:str = None,
-                   cluster_size:str = None,
-                   enable_serverless_compute:bool = None,
-                   min_num_clusters:int = None,
-                   max_num_clusters:int = None,
-                   auto_stop_mins:int = None,
-                   enable_photon:bool = None,
-                   spot_instance_policy:str = None,
-                   channel:str = None,
-                   tags:dict = None):
+    def edit(self,
+             endpoint_id: str,
+             name: str = None,
+             cluster_size: str = None,
+             enable_serverless_compute: bool = None,
+             min_num_clusters: int = None,
+             max_num_clusters: int = None,
+             auto_stop_mins: int = None,
+             enable_photon: bool = None,
+             spot_instance_policy: str = None,
+             channel: str = None,
+             tags: dict = None):
 
         params = dict()
 
@@ -166,10 +255,11 @@ class SqlEndpointsClient:
                     "value": value
                 })
 
-        self.client.execute_post_json(f"{self.client.endpoint}/api/2.0/sql/endpoints/{endpoint_id}/edit", params)
+        self.client.execute_post_json(f"{self.base_uri}/{endpoint_id}/edit", params)
         return self.get_by_id(endpoint_id)
 
-    def to_endpoint_name(self, user, naming_template:str, naming_params:dict):
+    @staticmethod
+    def to_endpoint_name(user, naming_template: str, naming_params: dict):
         username = user.get("userName")
 
         if "{da_hash}" in naming_template:
@@ -181,18 +271,19 @@ class SqlEndpointsClient:
         naming_params["da_name"] = username.split("@")[0]
         return naming_template.format(**naming_params)
 
-    def create_user_endpoints(self, naming_template:str, 
-                                    naming_params:dict,
-                                    cluster_size:str,
-                                    enable_serverless_compute:bool,
-                                    min_num_clusters:int = 1,
-                                    max_num_clusters:int = 1,
-                                    auto_stop_mins:int = 120,
-                                    enable_photon:bool = True,
-                                    spot_instance_policy:str = RELIABILITY_OPTIMIZED,
-                                    channel:str = CHANNEL_NAME_CURRENT,
-                                    tags:dict = dict(),
-                                    users:list = None):
+    def create_user_endpoints(self,
+                              naming_template: str,
+                              naming_params: dict,
+                              cluster_size: str,
+                              enable_serverless_compute: bool,
+                              min_num_clusters: int = 1,
+                              max_num_clusters: int = 1,
+                              auto_stop_mins: int = 120,
+                              enable_photon: bool = True,
+                              spot_instance_policy: str = RELIABILITY_OPTIMIZED,
+                              channel: str = CHANNEL_NAME_CURRENT,
+                              tags: dict = None,
+                              users: list = None):
         """Creates one SQL endpoint per user in the current workspace. The list of users can be limited to a subset of users with the "users" parameter.
     Parameters: 
         naming_template (str): The template used to name each user's endpoint.
@@ -209,6 +300,7 @@ class SqlEndpointsClient:
         users (list[str or dict] = None, str): unlike other parameters, this value is eventually converted to a list of user objects but may be specified as a list or single value (which is converted to a list). String values are assumed to be the user's username if it includes the @ symbole and the user's ID otherwise.
         """
 
+        tags = dict() if tags is None else tags
 
         for user in self.client.scim().users().to_users_list(users):
             self.create_user_endpoint(user=user, 
@@ -224,18 +316,19 @@ class SqlEndpointsClient:
                                       channel=channel,
                                       tags=tags)
 
-    def create_user_endpoint(self, user,
-                                   naming_template:str, 
-                                   naming_params:dict,
-                                   cluster_size:str,
-                                   enable_serverless_compute:bool,
-                                   min_num_clusters:int,
-                                   max_num_clusters:int,
-                                   auto_stop_mins:int,
-                                   enable_photon:bool,
-                                   spot_instance_policy:str,
-                                   channel:str,
-                                   tags:dict):
+    def create_user_endpoint(self,
+                             user,
+                             naming_template: str,
+                             naming_params: dict,
+                             cluster_size: str,
+                             enable_serverless_compute: bool,
+                             min_num_clusters: int,
+                             max_num_clusters: int,
+                             auto_stop_mins: int,
+                             enable_photon: bool,
+                             spot_instance_policy: str,
+                             channel: str,
+                             tags: dict):
         username = user.get("userName")
         active = user.get("active")
         
@@ -267,28 +360,27 @@ class SqlEndpointsClient:
         endpoint_id = endpoint.get("id")
         self.client.permissions().sql().endpoints().update_user(endpoint_id, username, "CAN_MANAGE")
 
-
-    def delete_user_endpoints(self, naming_template:str, naming_params:dict, users:list=None):
+    def delete_user_endpoints(self, naming_template: str, naming_params: dict, users: list = None):
         for user in self.client.scim().users().to_users_list(users):
             self.delete_user_endpoint(user=user, naming_template=naming_template, naming_params=naming_params)
 
-    def delete_user_endpoint(self, user, naming_template:str, naming_params:dict):
+    def delete_user_endpoint(self, user, naming_template: str, naming_params: dict):
         username = user.get("userName")
         endpoint_name = self.to_endpoint_name(user, naming_template, naming_params)
 
         for endpoint in self.client.sql().endpoints().list():
             if endpoint.get("name") == endpoint_name:
                 print(f"Deleting the endpoint \"{endpoint_name}\" for the user \"{username}\"")
-                self.delete(endpoint.get("id"))
+                self.delete_by_id(endpoint.get("id"))
                 return
 
         print(f"Skipping deletion of the endpoint \"{endpoint_name}\" for the user \"{username}\": Not found\n")
 
-    def start_user_endpoints(self, naming_template:str, naming_params:dict, users:list=None):
+    def start_user_endpoints(self, naming_template: str, naming_params: dict, users: list = None):
         for user in self.client.scim().users().to_users_list(users):
             self.start_user_endpoint(user=user, naming_template=naming_template, naming_params=naming_params)
 
-    def start_user_endpoint(self, user, naming_template:str, naming_params:dict):
+    def start_user_endpoint(self, user, naming_template: str, naming_params: dict):
         username = user.get("userName")
         endpoint_name = self.to_endpoint_name(user, naming_template, naming_params)
 
@@ -300,11 +392,11 @@ class SqlEndpointsClient:
 
         print(f"Skipping start of the endpoint \"{endpoint_name}\" for the user \"{username}\": Not found\n")
 
-    def stop_user_endpoints(self, naming_template:str, naming_params:dict, users:list=None):
+    def stop_user_endpoints(self, naming_template: str, naming_params: dict, users: list = None):
         for user in self.client.scim().users().to_users_list(users):
             self.stop_user_endpoint(user=user, naming_template=naming_template, naming_params=naming_params)
 
-    def stop_user_endpoint(self, user, naming_template:str, naming_params:dict, users:list=None):
+    def stop_user_endpoint(self, user, naming_template: str, naming_params: dict):
         username = user.get("userName")
         endpoint_name = self.to_endpoint_name(user, naming_template, naming_params)
 
