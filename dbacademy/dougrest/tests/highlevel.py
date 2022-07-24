@@ -5,14 +5,15 @@
 
 # COMMAND ----------
 
-from dbacademy.dougrest import databricks
 import unittest
+
+from dbacademy.dougrest import databricks
 
 
 class TestHighLevelFeatures(unittest.TestCase):
     """
-  General test of API connectivity for each of the main Databricks Workspace Rest APIs.
-  """
+    General test of API connectivity for each of the main Databricks Workspace Rest APIs.
+    """
 
     def testWorkspace(self):
         result = databricks.workspace.list("/")
@@ -39,7 +40,7 @@ class TestHighLevelFeatures(unittest.TestCase):
         self.assertIsInstance(result, list)
 
     def testSqlWarehouses(self):
-        result = databricks.sql.list()
+        result = databricks.sql.endpoints.list()
         self.assertIsInstance(result, list)
 
     def testScim(self):
