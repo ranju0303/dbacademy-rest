@@ -67,7 +67,7 @@ class SqlEndpointsClient:
         return None
 
     def list(self):
-        result = self.client.execute_get_json(f"{self.base_uri}")
+        result = self.client.execute_get_json(self.base_uri)
         return [] if "endpoints" not in result else result.get("endpoints")
 
     def create_or_update(self,
