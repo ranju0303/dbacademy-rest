@@ -67,7 +67,6 @@ class SqlEndpointsClient:
         return None
 
     def list(self):
-        print(self.base_uri)
         result = self.client.execute_get_json(self.base_uri)
         return result.get("warehouses", [])
 
