@@ -101,7 +101,7 @@ class DBAcademyRestClient:
         expected = self.expected_to_list(expected)
 
         response = self.session.patch(url, headers={"Authorization": "Bearer " + self.token}, data=json.dumps(params), timeout=(self.connect_timeout, self.read_timeout))
-        assert str(response.status_code) in expected, f"Expected one of {expected}, received {response.status_code}: {response.text}"
+        assert response.status_code in expected, f"Expected one of {expected}, received {response.status_code}: {response.text}"
 
         self.throttle_calls()
         return response
@@ -114,7 +114,7 @@ class DBAcademyRestClient:
         expected = self.expected_to_list(expected)
 
         response = self.session.post(url, headers={"Authorization": "Bearer " + self.token}, data=json.dumps(params), timeout=(self.connect_timeout, self.read_timeout))
-        assert str(response.status_code) in expected, f"Expected one of {expected}, received {response.status_code}: {response.text}"
+        assert response.status_code in expected, f"Expected one of {expected}, received {response.status_code}: {response.text}"
 
         self.throttle_calls()
         return response
@@ -127,7 +127,7 @@ class DBAcademyRestClient:
         expected = self.expected_to_list(expected)
 
         response = self.session.put(url, headers={"Authorization": "Bearer " + self.token}, data=json.dumps(params), timeout=(self.connect_timeout, self.read_timeout))
-        assert str(response.status_code) in expected, f"Expected one of {expected}, received {response.status_code}: {response.text}"
+        assert response.status_code in expected, f"Expected one of {expected}, received {response.status_code}: {response.text}"
 
         self.throttle_calls()
         return response
@@ -142,7 +142,7 @@ class DBAcademyRestClient:
         expected = self.expected_to_list(expected)
 
         response = self.session.get(url, headers={"Authorization": f"Bearer {self.token}"}, timeout=(self.connect_timeout, self.read_timeout))
-        assert str(response.status_code) in expected, f"Expected one of {expected}, received {response.status_code}: {response.text}"
+        assert response.status_code in expected, f"Expected one of {expected}, received {response.status_code}: {response.text}"
 
         self.throttle_calls()
         return response
@@ -155,7 +155,7 @@ class DBAcademyRestClient:
         expected = self.expected_to_list(expected)
 
         response = self.session.delete(url, headers={"Authorization": f"Bearer {self.token}"}, timeout=(self.connect_timeout, self.read_timeout))
-        assert str(response.status_code) in expected, f"Expected one of {expected}, received {response.status_code}: {response.text}"
+        assert response.status_code in expected, f"Expected one of {expected}, received {response.status_code}: {response.text}"
 
         self.throttle_calls()
         return response
@@ -164,10 +164,7 @@ class DBAcademyRestClient:
     def expected_to_list(expected) -> list:
         if type(expected) == str: expected = int(expected)
         if type(expected) == int: expected = [expected]
-        if type(expected) == tuple: expected = [expected]
+        if type(expected) == tuple: expected = [int(e) for e in expected]
         assert type(expected) == list, f"The parameter was expected to be of type str, int, tuple or list, found {type(expected)}"
-
-        # Convert all values to string
-        expected = [str(e) for e in expected]
 
         return expected
