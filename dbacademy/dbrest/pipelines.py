@@ -66,19 +66,12 @@ class PipelinesClient:
         return spec
 
     def update_from_dict(self, pipeline_id: str, params: dict):
-        import json
-        print(json.dumps(params, indent=4))
-        
         return self.client.execute_put_json(f"{self.base_uri}/{pipeline_id}", params)
 
     def create_from_dict(self, params: dict):
         return self.client.execute_post_json(f"{self.base_uri}", params)
 
     def create_or_update(self, name: str, storage: str, target: str, continuous: bool = False, development: bool = True, configuration: dict = None, notebooks: list = None, libraries: list = None, clusters: list = None, min_workers: int = 0, max_workers: int = 0, photon: bool = True, pipeline_id=None):
-
-        if pipeline_id is not None:
-            pipeline = self.get_by_id(pipeline_id)
-            if notebooks is None: notebooks = pipeline.get("notebooks")
 
         params = self.to_dict(name=name,
                               storage=storage,
