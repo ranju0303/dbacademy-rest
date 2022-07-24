@@ -69,7 +69,7 @@ class SqlEndpointsClient:
     def list(self):
         print(self.base_uri)
         result = self.client.execute_get_json(self.base_uri)
-        return [] if "endpoints" not in result else result.get("endpoints")
+        return result.get("warehouses", [])
 
     def create_or_update(self,
                          name: str,
