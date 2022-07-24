@@ -60,8 +60,8 @@ class SqlEndpointsClient:
     def delete_by_name(self, name):
         endpoint = self.get_by_name(name)
         if endpoint:
-            self.delete_by_id(endpoint.get("endpoint_id"))
-            
+            self.delete_by_id(endpoint.get("id"))
+
         return None
 
     def list(self):
