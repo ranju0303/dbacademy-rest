@@ -101,7 +101,7 @@ class DBAcademyRestClient:
         expected = self.expected_to_list(expected)
 
         response = self.session.patch(url, headers={"Authorization": "Bearer " + self.token}, data=json.dumps(params), timeout=(self.connect_timeout, self.read_timeout))
-        assert response.status_code in expected, f"({response.status_code}): {response.text}"
+        assert response.status_code in expected, f"Expected one of {expected}, received {response.status_code}: {response.text}"
 
         self.throttle_calls()
         return response
@@ -114,7 +114,7 @@ class DBAcademyRestClient:
         expected = self.expected_to_list(expected)
 
         response = self.session.post(url, headers={"Authorization": "Bearer " + self.token}, data=json.dumps(params), timeout=(self.connect_timeout, self.read_timeout))
-        assert response.status_code in expected, f"({response.status_code}): {response.text}"
+        assert response.status_code in expected, f"Expected one of {expected}, received {response.status_code}: {response.text}"
 
         self.throttle_calls()
         return response
@@ -127,7 +127,7 @@ class DBAcademyRestClient:
         expected = self.expected_to_list(expected)
 
         response = self.session.put(url, headers={"Authorization": "Bearer " + self.token}, data=json.dumps(params), timeout=(self.connect_timeout, self.read_timeout))
-        assert response.status_code in expected, f"({response.status_code}): {response.text}"
+        assert response.status_code in expected, f"Expected one of {expected}, received {response.status_code}: {response.text}"
 
         self.throttle_calls()
         return response
@@ -144,7 +144,7 @@ class DBAcademyRestClient:
         expected = self.expected_to_list(expected)
 
         response = self.session.get(url, headers={"Authorization": f"Bearer {self.token}"}, timeout=(self.connect_timeout, self.read_timeout))
-        assert response.status_code in expected, f"({response.status_code}): {response.text}"
+        assert response.status_code in expected, f"Expected one of {expected}, received {response.status_code}: {response.text}"
 
         self.throttle_calls()
         return response
@@ -157,7 +157,7 @@ class DBAcademyRestClient:
         expected = self.expected_to_list(expected)
 
         response = self.session.delete(url, headers={"Authorization": f"Bearer {self.token}"}, timeout=(self.connect_timeout, self.read_timeout))
-        assert response.status_code in expected, f"({response.status_code}): {response.text}"
+        assert response.status_code in expected, f"Expected one of {expected}, received {response.status_code}: {response.text}"
 
         self.throttle_calls()
         return response
