@@ -98,7 +98,7 @@ class SqlEndpointsClient:
                tags=tags)
         else:
             return self.update(
-               id=endpoint.get("id"),
+               endpoint_id=endpoint.get("id"),
                name=name,
                cluster_size=cluster_size,
                enable_serverless_compute=enable_serverless_compute,
@@ -109,50 +109,6 @@ class SqlEndpointsClient:
                spot_instance_policy=spot_instance_policy,
                channel=channel,
                tags=tags)
-
-    def update(self,
-               id: str,
-               name: str,
-               cluster_size: str,
-               enable_serverless_compute: bool,
-               min_num_clusters: int = 1,
-               max_num_clusters: int = 1,
-               auto_stop_mins: int = 120,
-               enable_photon: bool = True,
-               spot_instance_policy: str = RELIABILITY_OPTIMIZED,
-               channel: str = CHANNEL_NAME_CURRENT,
-               tags: dict = None):
-
-        assert spot_instance_policy in SPOT_POLICIES, f"Expected spot_instance_policy to be one of {SPOT_POLICIES}, found {spot_instance_policy}"
-        assert channel in CHANNELS, f"Expected channel to be one of {CHANNELS}, found {channel}"
-        assert cluster_size in CLUSTER_SIZES, f"Expected cluster_size to be one of {CLUSTER_SIZES}, found {cluster_size}"
-
-        params = {
-            "id": id
-        }
-
-        if name is not None: params["name"] = name,
-        if cluster_size is not None: params["cluster_size"] = cluster_size,
-        if min_num_clusters is not None: params["min_num_clusters"] = min_num_clusters,
-        if max_num_clusters is not None: params["max_num_clusters"] = max_num_clusters,
-        if auto_stop_mins is not None: params["auto_stop_mins"] = auto_stop_mins,
-        if spot_instance_policy is not None: params["spot_instance_policy"] = spot_instance_policy,
-        if enable_photon is not None: params["enable_photon"] = enable_photon,
-        if enable_serverless_compute is not None: params["enable_serverless_compute"] = enable_serverless_compute,
-        if channel is not None: params["channel"] = {"name": channel}
-
-        if tags is not None:
-            params["tags"] = {
-                "custom_tags": []
-            }
-            for item in tags.items():
-                custom_tags = params.get("tags").get("custom_tags", [])
-                custom_tags.append({
-                    "key": item[0],
-                    "value": item[1]
-                })
-
-        return self.client.execute_post_json(f"{self.base_uri}/{id}/edit", params)
 
     def create(self,
                name: str,
@@ -197,18 +153,18 @@ class SqlEndpointsClient:
 
         return self.client.execute_post_json(f"{self.base_uri}", params)
 
-    def edit(self,
-             endpoint_id: str,
-             name: str = None,
-             cluster_size: str = None,
-             enable_serverless_compute: bool = None,
-             min_num_clusters: int = None,
-             max_num_clusters: int = None,
-             auto_stop_mins: int = None,
-             enable_photon: bool = None,
-             spot_instance_policy: str = None,
-             channel: str = None,
-             tags: dict = None):
+    def update(self,
+               endpoint_id: str,
+               name: str = None,
+               cluster_size: str = None,
+               enable_serverless_compute: bool = None,
+               min_num_clusters: int = None,
+               max_num_clusters: int = None,
+               auto_stop_mins: int = None,
+               enable_photon: bool = None,
+               spot_instance_policy: str = None,
+               channel: str = None,
+               tags: dict = None):
 
         params = dict()
 
