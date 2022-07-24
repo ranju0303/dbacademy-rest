@@ -67,6 +67,10 @@ class SqlEndpointsClient:
         return None
 
     def list(self):
+
+        print(self.base_uri)
+        print(f"{self.client.endpoint}/api/2.0/sql/endpoints")
+
         result = self.client.execute_get_json(self.base_uri)
         return [] if "endpoints" not in result else result.get("endpoints")
 
