@@ -34,7 +34,7 @@ class SqlEndpointsClient:
 
     def __init__(self, client: DBAcademyRestClient):
         self.client = client
-        self.base_uri = f"{self.client.endpoint}/api/2.0/warehouses"
+        self.base_uri = f"{self.client.endpoint}/api/2.0/endpoints"
 
     def __call__(self) -> SqlEndpointsClient:
         """Returns itself.  Provided for backwards compatibility."""
