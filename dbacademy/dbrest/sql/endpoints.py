@@ -152,7 +152,7 @@ class SqlEndpointsClient:
                     "value": item[1]
                 })
 
-        return self.client.execute_post_json(f"{self.base_uri}/edit", params)
+        return self.client.execute_post_json(f"{self.base_uri}/{id}/edit", params)
 
     def create(self,
                name: str,
