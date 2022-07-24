@@ -101,7 +101,7 @@ class DBAcademyRestClient:
         expected = self.expected_to_list(expected)
 
         response = self.session.patch(url, headers={"Authorization": "Bearer " + self.token}, data=json.dumps(params), timeout=(self.connect_timeout, self.read_timeout))
-        assert response.status_code in expected, f"Expected one of {expected}, received {response.status_code}: {response.text}"
+        assert str(response.status_code) in expected, f"Expected one of {expected}, received {response.status_code}: {response.text}"
 
         self.throttle_calls()
         return response
@@ -114,7 +114,7 @@ class DBAcademyRestClient:
         expected = self.expected_to_list(expected)
 
         response = self.session.post(url, headers={"Authorization": "Bearer " + self.token}, data=json.dumps(params), timeout=(self.connect_timeout, self.read_timeout))
-        assert response.status_code in expected, f"Expected one of {expected}, received {response.status_code}: {response.text}"
+        assert str(response.status_code) in expected, f"Expected one of {expected}, received {response.status_code}: {response.text}"
 
         self.throttle_calls()
         return response
@@ -127,7 +127,7 @@ class DBAcademyRestClient:
         expected = self.expected_to_list(expected)
 
         response = self.session.put(url, headers={"Authorization": "Bearer " + self.token}, data=json.dumps(params), timeout=(self.connect_timeout, self.read_timeout))
-        assert response.status_code in expected, f"Expected one of {expected}, received {response.status_code}: {response.text}"
+        assert str(response.status_code) in expected, f"Expected one of {expected}, received {response.status_code}: {response.text}"
 
         self.throttle_calls()
         return response
@@ -135,16 +135,14 @@ class DBAcademyRestClient:
     def execute_get_json(self, url: str, expected=200) -> typing.Union[dict, None]:
         response = self.execute_get(url, expected)
 
-        if response.status_code == 200:
-            return response.json()
-        else:  # For example, expected includes 404
-            return None
+        # Returning None in cases where expected includes 404
+        return response.json() if response.status_code == 200 else None
 
     def execute_get(self, url: str, expected=200):
         expected = self.expected_to_list(expected)
 
         response = self.session.get(url, headers={"Authorization": f"Bearer {self.token}"}, timeout=(self.connect_timeout, self.read_timeout))
-        assert response.status_code in expected, f"Expected one of {expected}, received {response.status_code}: {response.text}"
+        assert str(response.status_code) in expected, f"Expected one of {expected}, received {response.status_code}: {response.text}"
 
         self.throttle_calls()
         return response
@@ -157,7 +155,7 @@ class DBAcademyRestClient:
         expected = self.expected_to_list(expected)
 
         response = self.session.delete(url, headers={"Authorization": f"Bearer {self.token}"}, timeout=(self.connect_timeout, self.read_timeout))
-        assert response.status_code in expected, f"Expected one of {expected}, received {response.status_code}: {response.text}"
+        assert str(response.status_code) in expected, f"Expected one of {expected}, received {response.status_code}: {response.text}"
 
         self.throttle_calls()
         return response
@@ -168,4 +166,8 @@ class DBAcademyRestClient:
         if type(expected) == int: expected = [expected]
         if type(expected) == tuple: expected = [expected]
         assert type(expected) == list, f"The parameter was expected to be of type str, int, tuple or list, found {type(expected)}"
+
+        # Convert all values to string
+        expected = [str(e) for e in expected]
+
         return expected
