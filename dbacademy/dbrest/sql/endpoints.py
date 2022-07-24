@@ -34,7 +34,7 @@ class SqlEndpointsClient:
 
     def __init__(self, client: DBAcademyRestClient):
         self.client = client
-        self.base_uri = f"{self.client.endpoint}/api/2.0/endpoints"
+        self.base_uri = f"{self.client.endpoint}/api/2.0/sql/warehouses"
 
     def __call__(self) -> SqlEndpointsClient:
         """Returns itself.  Provided for backwards compatibility."""
@@ -67,10 +67,6 @@ class SqlEndpointsClient:
         return None
 
     def list(self):
-
-        print(self.base_uri)
-        print(f"{self.client.endpoint}/api/2.0/sql/endpoints")
-
         result = self.client.execute_get_json(self.base_uri)
         return [] if "endpoints" not in result else result.get("endpoints")
 
