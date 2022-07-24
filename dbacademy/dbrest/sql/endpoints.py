@@ -151,7 +151,8 @@ class SqlEndpointsClient:
                 "value": item[1]
             })
 
-        return self.client.execute_post_json(f"{self.base_uri}", params)
+        result = self.client.execute_post_json(f"{self.base_uri}", params)
+        return self.get_by_id(result.get("id"))
 
     def edit(self, endpoint_id: str, name: str = None, cluster_size: str = None, enable_serverless_compute: bool = None, min_num_clusters: int = None, max_num_clusters: int = None, auto_stop_mins: int = None, enable_photon: bool = None, spot_instance_policy: str = None, channel: str = None, tags: dict = None):
         return self.update(endpoint_id, name, cluster_size, enable_serverless_compute, min_num_clusters, max_num_clusters, auto_stop_mins, enable_photon, spot_instance_policy, channel, tags)
