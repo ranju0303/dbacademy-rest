@@ -8,7 +8,7 @@ class CRUD(object):
                  prefix: str,
                  singular: str = None,
                  plural: str = None):
-        super().__init__(self)
+        super().__init__()
         self.accounts = accounts
         self.path = path
         self.prefix = prefix

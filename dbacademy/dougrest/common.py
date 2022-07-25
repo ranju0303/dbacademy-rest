@@ -53,7 +53,7 @@ class ApiClient:
         self._last_request_timestamp = 0
 
         backoff_factor = self.connect_timeout
-        retry = Retry(connect=Retry.DEFAULT_BACKOFF_MAX / backoff_factor, backoff_factor=backoff_factor)
+        retry = Retry(connect=Retry.BACKOFF_MAX / backoff_factor, backoff_factor=backoff_factor)
         self.session = requests.Session()
         self.session.headers = {'Authorization': authorization_header, 'Content-Type': 'text/json'}
         self.session.mount('http://', HTTPAdapter(max_retries=retry))

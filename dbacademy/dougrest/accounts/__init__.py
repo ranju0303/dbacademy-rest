@@ -27,38 +27,3 @@ class AccountsApi(ApiClient):
         self.budgets = Budgets(self)
         self.workspaces = Workspaces(self)
         self.private_access = PrivateAccessSettings(self)
-
-    def api(self, method, path, data={}):
-        from json import JSONDecodeError
-        response = self._api_raw(method, path, data)
-        try:
-            return response.json()
-        except JSONDecodeError as e:
-            e2 = DatabricksApiException(e.msg, 500)
-            e2.__cause__ = e
-            e2.cause = e
-            e2.response = response
-
-    def _api_raw(self, method, path, data={}):
-        import requests
-        import pprint
-        import json
-        if method == 'GET':
-            translated_data = {k: DatabricksApi._translate_boolean_to_query_param(data[k]) for k in data}
-            resp = self.session.request(method, self.url + path, params=translated_data)
-        else:
-            resp = self.session.request(method, self.url + path, data=json.dumps(data))
-        try:
-            resp.raise_for_status()
-        except requests.exceptions.HTTPError as e:
-            message = e.args[0]
-            try:
-                reason = pprint.pformat(json.loads(resp.text), indent=2)
-                message += '\n Response from server: \n {}'.format(reason)
-            except ValueError:
-                pass
-            if 400 <= e.response.status_code < 500:
-                raise DatabricksApiException(http_exception=e)
-            else:
-                raise requests.exceptions.HTTPError(message, response=e.response)
-        return resp

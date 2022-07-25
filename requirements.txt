@@ -1,5 +1,5 @@
 setuptools~=59.0.1
 requests~=2.27.1
 simplejson~=3.17.6
-urllib3~=1.26.10
+urllib3~=1.25.11
 git+https://github.com/databricks-academy/dbacademy-gems
