@@ -1,4 +1,5 @@
 from abc import ABCMeta, abstractmethod
+from typing import List
 
 from dbacademy.rest.common import *
 
@@ -44,7 +45,7 @@ class CRUD(ApiContainer, metaclass=ABCMeta):
                 m.__doc__ = m.__doc__.format(**self.__dict__)
 
     @abstractmethod
-    def _list(self, *, expected: HttpErrorCodes = None):
+    def _list(self, *, expected: HttpErrorCodes = None) -> List[Item]:
         """Perform API call"""
         pass
 
@@ -115,11 +116,11 @@ class CRUD(ApiContainer, metaclass=ABCMeta):
             return self.get_by_name(item_name, if_not_exists="error")[self.id_key]
         raise ValueError(f"spec must have either {self.id_key!r} or {self.name_key!r}")
 
-    def list(self):
+    def list(self) -> List[Item]:
         """Returns a list of all {plural}."""
         return [self._refresh(item) for item in self._list()]
 
-    def list_names(self):
+    def list_names(self) -> List[str]:
         """Returns a list the names of all {plural}."""
         return [item[self.name_key] for item in self._list()]
 
