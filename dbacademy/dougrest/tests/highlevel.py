@@ -56,6 +56,10 @@ class TestHighLevelFeatures(unittest.TestCase):
         self.assertIsInstance(result, list)
         self.assertTrue(result)
 
+    def testPermissions(self):
+        pool_id = databricks.pools.list()[0]["instance_pool_id"]
+        databricks.permissions.pools.get_levels(pool_id)
+
 
 # COMMAND ----------
 

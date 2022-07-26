@@ -77,3 +77,5 @@ class DatabricksApi(dict, ApiClient):
         self.sql = Sql(self)
         from dbacademy.dougrest.workspace import Workspace
         self.workspace = Workspace(self)
+        from dbacademy.dougrest.permissions import Permissions
+        self.permissions = Permissions(self)

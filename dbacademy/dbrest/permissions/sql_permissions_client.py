@@ -1,6 +1,6 @@
-from dbacademy.dbrest import DBAcademyRestClient
 import builtins
 
+from dbacademy.dbrest import DBAcademyRestClient
 from dbacademy.rest.common import ApiContainer
 
 

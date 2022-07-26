@@ -6,4 +6,4 @@ from dbacademy.dougrest.client import DatabricksApi, DatabricksApiException
 
 __all__ = ["DatabricksApi", "DatabricksApiException", "databricks"]
 
-databricks = DatabricksApi.default_client
+databricks: DatabricksApi = DatabricksApi.default_client
