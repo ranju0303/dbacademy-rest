@@ -1,4 +1,8 @@
-from dbacademy.dougrest.common import ApiClient
+from __future__ import annotations
+
+from dbacademy.dougrest.common import *
+
+__all__ = ["DatabricksApi"]
 
 
 class DatabricksApi(dict, ApiClient):
@@ -9,27 +13,32 @@ class DatabricksApi(dict, ApiClient):
         "GCP": "n1-standard-4",
     }
 
-    _default_client = None
+    @CachedStaticProperty
+    def default_client() -> DatabricksApi:
+        result = DatabricksApi.known_clients.get("DEFAULT")
+        if result is None:
+            result = DatabricksApi()
+        return result
 
-    @classmethod
-    def default_client(cls):
-        if cls._default_client is None:
-            import os
-            import configparser
-            for path in ('.databrickscfg', '~/.databrickscfg'):
-                path = os.path.expanduser(path)
-                if not os.path.exists(path):
+    @CachedStaticProperty
+    def known_clients() -> Dict[str, DatabricksApi]:
+        clients = {}
+        import os
+        import configparser
+        for path in ('.databrickscfg', '~/.databrickscfg'):
+            path = os.path.expanduser(path)
+            if not os.path.exists(path):
+                continue
+            config = configparser.ConfigParser()
+            config.read(path)
+            for section_name,section in config.items():
+                api_type = section.get('api_type', 'workspace')
+                if api_type != 'workspace':
                     continue
-                config = configparser.ConfigParser()
-                config.read(path)
-                if 'DEFAULT' not in config:
-                    print('No Default')
-                    continue
-                host = config['DEFAULT']['host'].rstrip("/")[8:]
-                token = config['DEFAULT']['token']
-                return DatabricksApi(host, token=token)
-            cls._default_client = DatabricksApi()
-        return cls._default_client
+                host = section['host'].rstrip("/")[8:]
+                token = section['token']
+                clients[section_name] = DatabricksApi(host, token=token)
+        return clients
 
     def __init__(self, hostname=None, *, token=None, user=None, password=None, authorization_header=None, cloud="AWS",
                  deployment_name=None):
@@ -66,24 +75,3 @@ class DatabricksApi(dict, ApiClient):
         self.sql = Sql(self)
         from dbacademy.dougrest.workspace import Workspace
         self.workspace = Workspace(self)
-
-    # @property
-    # def workspace_config(self):
-    #     driver = getattr(getattr(sc._jvm, "com.databricks.backend.common.util.Project$Driver$"), "MODULE$")
-    #     empty = sc._jvm.com.databricks.conf.Configs.empty()
-    #     dbHome = sc._jvm.com.databricks.conf.StaticConf.DB_HOME()
-    #     configFile = sc._jvm.com.databricks.conf.trusted.ProjectConf.loadLocalConfig(driver, empty, False, dbHome)
-    #     driverConf = sc._jvm.com.databricks.backend.daemon.driver.DriverConf(configFile)
-    #     return driverConf
-    #
-    # @property
-    # def execution_context(self):
-    #     return dbutils.entry_point.getDbutils().notebook().getContext()
-    #
-    # @property
-    # def cloud_provider(self):
-    #     return self.workspace_config.cloudProvider().get()
-    #
-    # @property
-    # def cluster_id(self):
-    #     return self.execution_context.clusterId().get()

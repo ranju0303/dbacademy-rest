@@ -7,16 +7,45 @@
 
 import unittest
 
-from requests import HTTPError
-
 from dbacademy.dougrest import databricks, DatabricksApiException
 from dbacademy.dougrest.common import ApiClient
 
 
-class TestApiClientFeatures(unittest.TestCase):
+class TestApiClient(unittest.TestCase):
     """
     Test client error handling, retry, and backoff features.
     """
+
+    def testApiSimple(self):
+        response = databricks.api_simple("GET", "/2.0/workspace/list", path="/")
+        self.assertIsNotNone(response)
+
+    def testExpected404(self):
+        response = databricks.api_simple("GET", "/2.0/workspace/list", path="/does-not-exist", expected=404)
+
+    def testSelfCallable(self):
+        self.assertEqual(databricks, databricks())
+
+    def testExecuteGetJson(self):
+        url = "2.0/workspace/list?path=/"
+        results = databricks.execute_get_json(url)
+
+    def testExecuteGetJsonWithHostname(self):
+        # We intentionally pass in a full URL as part of testing for legacy compatibility.
+        url = databricks.url + "2.0/workspace/list?path=/"
+        results = databricks.execute_get_json(url)
+
+    def testExecuteGetJsonWithHttp(self):
+        url = "https://unknown.domain.com/api/2.0/workspace/list?path=/"
+        try:
+            results = databricks.execute_get_json(url)
+            self.fail("Expected ValueError due to 'https:' in URL.")
+        except ValueError:
+            pass
+
+    def testExecuteGetJsonExpected404(self):
+        url = "2.0/workspace/list?path=/does-not-exist"
+        results = databricks.execute_get_json(url, expected=[200, 404])
 
     def testNotFound(self):
         try:
@@ -52,7 +81,7 @@ class TestApiClientFeatures(unittest.TestCase):
 
 def main():
     suite = unittest.TestSuite()
-    suite.addTest(unittest.makeSuite(TestApiClientFeatures))
+    suite.addTest(unittest.makeSuite(TestApiClient))
     runner = unittest.TextTestRunner()
     runner.run(suite)
 

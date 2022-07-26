@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 from dbacademy.dbrest import DBAcademyRestClient
 
 

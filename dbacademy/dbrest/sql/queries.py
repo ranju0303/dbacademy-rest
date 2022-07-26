@@ -1,6 +1,9 @@
 from __future__ import annotations
-from dbacademy.dbrest import DBAcademyRestClient
+
 import builtins
+
+from dbacademy.dbrest import DBAcademyRestClient
+
 
 class SqlQueriesClient:
 

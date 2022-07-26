@@ -5,8 +5,10 @@
 
 # COMMAND ----------
 
-from dbacademy.dbrest.tests import databricks
 import unittest
+
+from dbacademy.dbrest.tests import databricks
+
 
 class TestHighLevelFeatures(unittest.TestCase):
   """

@@ -16,9 +16,7 @@ class TestAccountsApi(unittest.TestCase):
     """
 
     def testListWorkspaces(self):
-        accounts = AccountsApi("b6e87bd6-c65c-46d3-abde-6840bf706d39",
-                               user="class+curriculum@databricks.com",
-                               password="REDACTED")
+        accounts = AccountsApi.default_account
         result = accounts.workspaces.list()
         self.assertIsInstance(result, list)
 
@@ -27,7 +25,7 @@ class TestAccountsApi(unittest.TestCase):
 
 def main():
     suite = unittest.TestSuite()
-    suite.addTest(unittest.makeSuite(TestHighLevelFeatures))
+    suite.addTest(unittest.makeSuite(TestAccountsApi))
     runner = unittest.TextTestRunner()
     runner.run(suite)
 

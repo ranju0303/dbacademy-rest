@@ -1,4 +1,8 @@
-from dbacademy.dougrest.accounts import CRUD
+from typing import Union, Container, Dict
+
+from overrides import overrides
+
+from dbacademy.dougrest.accounts.crud import CRUD
 from dbacademy.dougrest.client import DatabricksApi
 from dbacademy.dougrest.common import DatabricksApiException
 
@@ -131,7 +135,8 @@ class Workspace(DatabricksApi):
                 import time
                 time.sleep(15)
 
-    # Override base class method
-    def api(self, method: str, path: str, data: dict = {}):
+    @overrides
+    def api(self, http_method: str, endpoint_path: str, data=None, *,
+            expected: Union[int, Container[int]] = None) -> Union[str, Dict]:
         self.wait_until_ready()
-        return super().api(method, path, data)
+        return super().api(http_method, endpoint_path, data)
