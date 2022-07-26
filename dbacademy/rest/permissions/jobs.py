@@ -1,5 +1,7 @@
-from dbacademy.dougrest.permissions.crud import PermissionsCrud
-from dbacademy.rest.common import ApiContainer, ApiClient
+from dbacademy.rest.common import ApiClient
+from dbacademy.rest.permissions.crud import PermissionsCrud
+
+__all__ = ["Jobs"]
 
 
 class Jobs(PermissionsCrud):

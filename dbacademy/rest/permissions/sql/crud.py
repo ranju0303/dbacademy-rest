@@ -1,8 +1,10 @@
-from dbacademy.dougrest.permissions.crud import PermissionsCrud
 from dbacademy.rest.common import ApiClient
+from dbacademy.rest.permissions.crud import PermissionsCrud
+
+__all__ = ["SqlCrud"]
 
 
-class SqlPermissions(PermissionsCrud):
+class SqlCrud(PermissionsCrud):
     valid_objects = ["alerts", "dashboards", "data_sources", "queries"]
     valid_permissions = [None, "CAN_VIEW", "CAN_RUN", "CAN_MANAGE"]
 

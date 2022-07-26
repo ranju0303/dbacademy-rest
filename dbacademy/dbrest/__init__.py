@@ -1,48 +1,44 @@
-from typing import Union
-
-from dbacademy.rest.common import ApiContainer
+from dbacademy.rest.common import ApiClient
 
 
-class DBAcademyRestClient(ApiContainer):
-  
-    def __init__(self, token: str = None, endpoint: str = None, throttle: int = 0):
+class DBAcademyRestClient(ApiClient):
+    """Databricks Academy REST API client."""
+    def __init__(self,
+                 token: str = None,
+                 endpoint: str = None,
+                 throttle_seconds: int = 0,
+                 *,
+                 user: str = None,
+                 password: str = None,
+                 authorization_header: str = None,
+                 client: ApiClient = None):
         """
-        Creates a new instance of the Databricks Academy Rest Client.
-            :param endpoint: The target endpoint or the notebook's default endpoint when None.
-            :param token: The corresponding user's access token or the notebook's access token when None.
-            :param throttle: The number of seconds to block before executing the next request.
+        Create a Databricks REST API client.
+
+        This is similar to ApiClient.__init__ except the parameter order is different to ensure backwards compatibility.
+
+        Args:
+            endpoint: The common base URL to the API endpoints.  e.g. https://workspace.cloud.databricks.com/API/
+            token: The API authentication token.  Defaults to None.
+            user: The authentication username.  Defaults to None.
+            password: The authentication password.  Defaults to None.
+            authorization_header: The header to use for authentication.
+                By default, it's generated from the token or password.
+            client: A parent ApiClient from which to clone settings.
+            throttle_seconds: Number of seconds to sleep between requests.
         """
+        if endpoint is None:
+            from dbacademy.rest.dbgems_fix import dbgems
+            endpoint = dbgems.get_notebooks_api_endpoint()
+        if not any((authorization_header, token, password)):
+            from dbacademy.rest.dbgems_fix import dbgems
+            token = dbgems.get_notebooks_api_token()
+        url = endpoint.rstrip("/") + "/api/"
 
-        import requests
-        from urllib3.util.retry import Retry
-        from requests.adapters import HTTPAdapter
-
-        self.throttle = throttle
-
-        self.read_timeout = 300   # seconds
-        self.connect_timeout = 5  # seconds
-
-        backoff_factor = self.connect_timeout
-        retry = Retry(connect=Retry.BACKOFF_MAX / backoff_factor, backoff_factor=backoff_factor)
-
-        self.session = requests.Session()
-        self.session.mount('https://', HTTPAdapter(max_retries=retry))
-
-        if endpoint is not None:
-            self.endpoint = endpoint
-        else:
-            from dbacademy import dbgems
-            self.endpoint = dbgems.get_notebooks_api_endpoint()
-
-        if token is not None:
-            self.token = token
-        else:
-            from dbacademy import dbgems
-            self.token = dbgems.get_notebooks_api_token()
-
-        if self.throttle > 0:
-            s = "" if self.throttle == 1 else "s"
-            print(f"** WARNING ** Requests are being throttled by {self.throttle} second{s} per request.")
+        super().__init__(url,
+                         token=token, user=user, password=password, authorization_header=authorization_header,
+                         client=client, throttle_seconds=throttle_seconds)
+        self.endpoint = endpoint
 
         from dbacademy.dbrest.clusters import ClustersClient
         self.clusters = ClustersClient(self)
@@ -56,8 +52,8 @@ class DBAcademyRestClient(ApiContainer):
         from dbacademy.dbrest.jobs import JobsClient
         self.jobs = JobsClient(self)
 
-        from dbacademy.dbrest.permissions import PermissionsClient
-        self.permissions = PermissionsClient(self)
+        from dbacademy.rest.permissions import Permissions
+        self.permissions = Permissions(self)
 
         from dbacademy.dbrest.pipelines import PipelinesClient
         self.pipelines = PipelinesClient(self)
@@ -85,83 +81,3 @@ class DBAcademyRestClient(ApiContainer):
 
         from dbacademy.dbrest.workspace import WorkspaceClient
         self.workspace = WorkspaceClient(self)
-
-    def throttle_calls(self):
-        import time
-        time.sleep(self.throttle)
-
-    def execute_patch_json(self, url: str, params: dict, expected=200) -> dict:
-        return self.execute_patch(url, params, expected).json()
-
-    def execute_patch(self, url: str, params: dict, expected=200):
-        import json
-        expected = self.expected_to_list(expected)
-
-        response = self.session.patch(url, headers={"Authorization": "Bearer " + self.token}, data=json.dumps(params), timeout=(self.connect_timeout, self.read_timeout))
-        assert response.status_code in expected, f"Expected one of {expected}, received {response.status_code}: {response.text}"
-
-        self.throttle_calls()
-        return response
-
-    def execute_post_json(self, url: str, params: dict, expected=200) -> dict:
-        return self.execute_post(url, params, expected).json()
-
-    def execute_post(self, url: str, params: dict, expected=200):
-        import json
-        expected = self.expected_to_list(expected)
-
-        response = self.session.post(url, headers={"Authorization": "Bearer " + self.token}, data=json.dumps(params), timeout=(self.connect_timeout, self.read_timeout))
-        assert response.status_code in expected, f"Expected one of {expected}, received {response.status_code}: {response.text}"
-
-        self.throttle_calls()
-        return response
-
-    def execute_put_json(self, url: str, params: dict, expected=200) -> dict:
-        return self.execute_put(url, params, expected).json()
-
-    def execute_put(self, url: str, params: dict, expected=200):
-        import json
-        expected = self.expected_to_list(expected)
-
-        response = self.session.put(url, headers={"Authorization": "Bearer " + self.token}, data=json.dumps(params), timeout=(self.connect_timeout, self.read_timeout))
-        assert response.status_code in expected, f"Expected one of {expected}, received {response.status_code}: {response.text}"
-
-        self.throttle_calls()
-        return response
-
-    def execute_get_json(self, url: str, expected=200) -> Union[dict, None]:
-        response = self.execute_get(url, expected)
-
-        # Returning None in cases where expected includes 404
-        return response.json() if response.status_code == 200 else None
-
-    def execute_get(self, url: str, expected=200):
-        expected = self.expected_to_list(expected)
-
-        response = self.session.get(url, headers={"Authorization": f"Bearer {self.token}"}, timeout=(self.connect_timeout, self.read_timeout))
-        assert response.status_code in expected, f"Expected one of {expected}, received {response.status_code}: {response.text}"
-
-        self.throttle_calls()
-        return response
-
-    def execute_delete_json(self, url: str, expected=(200, 404)) -> dict:
-        response = self.execute_delete(url, expected)
-        return response.json()
-
-    def execute_delete(self, url: str, expected=(200, 404)):
-        expected = self.expected_to_list(expected)
-
-        response = self.session.delete(url, headers={"Authorization": f"Bearer {self.token}"}, timeout=(self.connect_timeout, self.read_timeout))
-        assert response.status_code in expected, f"Expected one of {expected}, received {response.status_code}: {response.text}"
-
-        self.throttle_calls()
-        return response
-
-    @staticmethod
-    def expected_to_list(expected) -> list:
-        if type(expected) == str: expected = int(expected)
-        if type(expected) == int: expected = [expected]
-        if type(expected) == tuple: expected = [int(e) for e in expected]
-        assert type(expected) == list, f"The parameter was expected to be of type str, int, tuple or list, found {type(expected)}"
-
-        return expected

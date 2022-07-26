@@ -1,15 +1,8 @@
 from abc import ABCMeta, abstractmethod
 
-from typing import Dict, Literal, Union
+from dbacademy.rest.common import *
 
-from dbacademy.rest.common import ApiClient, ApiContainer, DatabricksApiException, HttpErrorCodes
-
-__all__ = ["CRUD", "IfNotExists", "IfExists", "ItemId", "Item", "HttpErrorCodes", "DatabricksApiException"]
-
-IfNotExists = Literal["error", "ignore"]
-IfExists = Literal["create", "error", "ignore", "overwrite", "update"]
-ItemId = Union[int, str]
-Item = Dict
+__all__ = ["CRUD"]
 
 
 class CRUD(ApiContainer, metaclass=ABCMeta):
@@ -61,12 +54,12 @@ class CRUD(ApiContainer, metaclass=ABCMeta):
         pass
 
     @abstractmethod
-    def _create(self, item: Item, *, expected: HttpErrorCodes = None) -> Union[Item, str]:
+    def _create(self, item: Item, *, expected: HttpErrorCodes = None) -> ItemOrId:
         """Perform API call"""
         pass
 
     @abstractmethod
-    def _update(self, item: Item, *, expected: HttpErrorCodes = None) -> Union[Item, str]:
+    def _update(self, item: Item, *, expected: HttpErrorCodes = None) -> ItemOrId:
         """Perform API call"""
         pass
 

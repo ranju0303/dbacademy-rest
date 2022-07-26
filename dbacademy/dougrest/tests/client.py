@@ -7,8 +7,8 @@
 
 import unittest
 
-from dbacademy.dougrest import databricks, DatabricksApiException
 from dbacademy.rest.common import ApiClient
+from dbacademy.dougrest import databricks, DatabricksApiException
 
 
 class TestApiClient(unittest.TestCase):

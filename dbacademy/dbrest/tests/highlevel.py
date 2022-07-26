@@ -5,14 +5,19 @@
 
 # COMMAND ----------
 
-from dbacademy.dbrest.tests import databricks
 import unittest
+
+from dbacademy.dbrest.tests import databricks
 
 
 class TestHighLevelFeatures(unittest.TestCase):
     """
     General test of API connectivity for each of the main Databricks Workspace Rest APIs.
     """
+
+    def testParentheses(self):
+        result = databricks().workspace().ls("/")
+        self.assertIsInstance(result, list)
 
     def testWorkspace(self):
         result = databricks.workspace.ls("/")

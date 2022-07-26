@@ -1,6 +1,3 @@
-from dbacademy.rest.dbgems_fix import dbgems
-
-
 def create_client():
     from dbacademy.dbrest import DBAcademyRestClient
     import os

@@ -80,7 +80,7 @@ class WorkspaceClient(ApiContainer):
         params = urlencode({
             "path": notebook_path
         })
-        response = self.client.execute_get(f"{self.client.endpoint}/api/2.0/workspace/get-status?{params}", expected=[200, 404])
+        return self.client.execute_get(f"{self.client.endpoint}/api/2.0/workspace/get-status?{params}", expected=[200, 404])
         if response.status_code == 404:
             return None
         else:

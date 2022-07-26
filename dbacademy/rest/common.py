@@ -1,13 +1,19 @@
 from __future__ import annotations
-from typing import Container, Dict, Union, TypeVar
+from typing import Container, Dict, Literal, TypeVar, Union
 
 from deprecated.classic import deprecated
 from pprint import pformat
 from requests import HTTPError, Response
 
-__all__ = ["CachedStaticProperty", "ApiContainer", "ApiClient", "DatabricksApiException", "HttpErrorCodes"]
+__all__ = ["CachedStaticProperty", "ApiContainer", "ApiClient", "DatabricksApiException",
+           "HttpErrorCodes", "IfNotExists", "IfExists", "Item", "ItemId", "ItemOrId"]
 
 HttpErrorCodes = Union[int, Container[int]]
+IfNotExists = Literal["error", "ignore"]
+IfExists = Literal["create", "error", "ignore", "overwrite", "update"]
+Item = Dict
+ItemId = Union[int, str]
+ItemOrId = Union[int, str, Dict]
 
 
 class CachedStaticProperty:
@@ -142,6 +148,48 @@ class ApiClient(ApiContainer):
         return self.api(http_method, endpoint_path, data, expected=expected)
 
     def api(self, http_method: str, endpoint_path: str, data=None, *,
+            expected: HttpErrorCodes = None) -> Union[None, str, Dict]:
+        """
+        Invoke the Databricks REST API.
+
+        Args:
+            http_method: 'GET', 'PUT', 'POST', or 'DELETE'
+            endpoint_path: The path to append to the URL for the API endpoint, excluding the leading '/'.
+                For example: path="2.0/secrets/put"
+            data: Payload to attach to the HTTP request.  GET requests encode as params, all others as json.
+            expected: HTTP error codes to treat as expected rather than as an error.
+
+        Returns:
+            The return value of the API call as parsed JSON.  If the result is invalid JSON then the
+            result will be returned as plain text.
+
+        Raises:
+            requests.HTTPError: If the API returns an error and on_error='raise'.
+        """
+        import json
+        if data is None:
+            data = {}
+        self._throttle_calls()
+        if endpoint_path.startswith(self.url):
+            endpoint_path = endpoint_path[len(self.url):]
+        elif endpoint_path.startswith("http"):
+            raise ValueError(f"endpoint_path must be relative url, not {endpoint_path!r}.")
+        url = self.url + endpoint_path.lstrip("/")
+        timeout = (self.connect_timeout, self.read_timeout)
+        response: Response
+        if http_method == 'GET':
+            params = {k: str(v).lower() if isinstance(v, bool) else v for k, v in data.items()}
+            response = self.session.request(http_method, url, params=params, timeout=timeout)
+        else:
+            response = self.session.request(http_method, url, data=json.dumps(data), timeout=timeout)
+        if not (200 <= response.status_code < 300):
+            return self._raise_for_status(response, expected)
+        try:
+            return response.json()
+        except ValueError:
+            return response.text
+
+    def api_raw(self, http_method: str, endpoint_path: str, data=None, *,
             expected: HttpErrorCodes = None) -> Union[None, str, Dict]:
         """
         Invoke the Databricks REST API.

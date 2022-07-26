@@ -1,12 +1,13 @@
-from typing import Dict, List, Literal
+from typing import Any, Dict, List, Literal
 
-from dbacademy.rest.common import ApiClient, ApiContainer
+from dbacademy.rest.common import *
+
+__all__ = ["PermissionsCrud"]
 
 valid_whats = ("user_name", "group_name", "service_principal_name")
 What = Literal[valid_whats]
 PermissionLevel = str
-Id = str
-ACL = dict
+ACL = Dict[str, Any]
 PermissionLevelList = List[Dict[str, str]]
 
 
@@ -51,10 +52,10 @@ class PermissionsCrud(ApiContainer):
             raise ValueError(f"Expected 'permission_level' to be one of {self.valid_permissions},"
                              f" found '{permission_level}'")
 
-    def get_levels(self, id: Id) -> PermissionLevelList:
+    def get_levels(self, id: ItemId) -> PermissionLevelList:
         return self.client.api("GET", f"{self.path}/{id}/permissionLevels")
 
-    def get(self, id: Id) -> ACL:
+    def get(self, id: ItemId) -> ACL:
         return self.client.api("GET", f"{self.path}/{id}")
 
     def update(self, id, what: What, value: str, permission_level: PermissionLevel):

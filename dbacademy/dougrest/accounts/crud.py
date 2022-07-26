@@ -2,7 +2,8 @@ from typing import Union
 
 from overrides import overrides
 
-from dbacademy.rest.crud import *
+from dbacademy.rest.common import *
+from dbacademy.rest.crud import CRUD
 
 
 class AccountsCRUD(CRUD):
