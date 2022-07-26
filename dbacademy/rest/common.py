@@ -90,7 +90,7 @@ class ApiClient(ApiContainer):
         from urllib3.util.retry import Retry
         from requests.adapters import HTTPAdapter
 
-        if client and not url.indexof("://"):
+        if client and "://" not in url:
             url = client.url.lstrip("/") + "/" + url.rstrip("/")
         if authorization_header:
             pass
@@ -101,7 +101,7 @@ class ApiClient(ApiContainer):
             encoded_auth = (user + ":" + password).encode()
             authorization_header = "Basic " + base64.standard_b64encode(encoded_auth).decode()
         elif client is not None:
-            authorization_header = client.authorization_header
+            authorization_header = client.session.headers["Authorization"]
         else:
             raise ValueError("Must specify one of token, password, or authorization_header")
         if not url.endswith("/"):
@@ -166,31 +166,16 @@ class ApiClient(ApiContainer):
         Raises:
             requests.HTTPError: If the API returns an error and on_error='raise'.
         """
-        import json
-        if data is None:
-            data = {}
-        self._throttle_calls()
-        if endpoint_path.startswith(self.url):
-            endpoint_path = endpoint_path[len(self.url):]
-        elif endpoint_path.startswith("http"):
-            raise ValueError(f"endpoint_path must be relative url, not {endpoint_path!r}.")
-        url = self.url + endpoint_path.lstrip("/")
-        timeout = (self.connect_timeout, self.read_timeout)
-        response: Response
-        if http_method == 'GET':
-            params = {k: str(v).lower() if isinstance(v, bool) else v for k, v in data.items()}
-            response = self.session.request(http_method, url, params=params, timeout=timeout)
-        else:
-            response = self.session.request(http_method, url, data=json.dumps(data), timeout=timeout)
+        response = self.api_raw(http_method, endpoint_path, data, expected=expected)
         if not (200 <= response.status_code < 300):
-            return self._raise_for_status(response, expected)
+            return None
         try:
             return response.json()
         except ValueError:
             return response.text
 
     def api_raw(self, http_method: str, endpoint_path: str, data=None, *,
-            expected: HttpErrorCodes = None) -> Union[None, str, Dict]:
+                expected: HttpErrorCodes = None) -> Response:
         """
         Invoke the Databricks REST API.
 
@@ -224,12 +209,8 @@ class ApiClient(ApiContainer):
             response = self.session.request(http_method, url, params=params, timeout=timeout)
         else:
             response = self.session.request(http_method, url, data=json.dumps(data), timeout=timeout)
-        if not (200 <= response.status_code < 300):
-            return self._raise_for_status(response, expected)
-        try:
-            return response.json()
-        except ValueError:
-            return response.text
+        self._raise_for_status(response, expected)
+        return response
 
     def _throttle_calls(self):
         if self.throttle_seconds <= 0:
@@ -294,45 +275,45 @@ class ApiClient(ApiContainer):
             e = DatabricksApiException(http_exception=e)
         raise e
 
-    @deprecated(reason="Use ApiClient.api instead")
+    @deprecated(reason="Use ApiClient.api instead", action="ignore")
     def execute_patch_json(self, url: str, params: dict, expected=200) -> dict:
         return self.api("PATCH", url, params, expected=expected)
 
-    @deprecated(reason="Use ApiClient.api instead")
+    @deprecated(reason="Use ApiClient.api instead", action="ignore")
     def execute_patch(self, url: str, params: dict, expected=200):
-        return self.api("PATCH", url, params, expected=expected)
+        return self.api_raw("PATCH", url, params, expected=expected)
 
-    @deprecated(reason="Use ApiClient.api instead")
+    @deprecated(reason="Use ApiClient.api instead", action="ignore")
     def execute_post_json(self, url: str, params: dict, expected=200) -> dict:
         return self.api("POST", url, params, expected=expected)
 
-    @deprecated(reason="Use ApiClient.api instead")
+    @deprecated(reason="Use ApiClient.api instead", action="ignore")
     def execute_post(self, url: str, params: dict, expected=200):
-        return self.api("POST", url, params, expected=expected)
+        return self.api_raw("POST", url, params, expected=expected)
 
-    @deprecated(reason="Use ApiClient.api instead")
+    @deprecated(reason="Use ApiClient.api instead", action="ignore")
     def execute_put_json(self, url: str, params: dict, expected=200) -> dict:
         return self.api("PUT", url, params, expected=expected)
 
-    @deprecated(reason="Use ApiClient.api instead")
+    @deprecated(reason="Use ApiClient.api instead", action="ignore")
     def execute_put(self, url: str, params: dict, expected=200):
-        return self.api("PUT", url, params, expected=expected)
+        return self.api_raw("PUT", url, params, expected=expected)
 
-    @deprecated(reason="Use ApiClient.api instead")
+    @deprecated(reason="Use ApiClient.api instead", action="ignore")
     def execute_get_json(self, url: str, expected=200) -> Union[dict, None]:
         return self.api("GET", url, expected=expected)
 
-    @deprecated(reason="Use ApiClient.api instead")
+    @deprecated(reason="Use ApiClient.api instead", action="ignore")
     def execute_get(self, url: str, expected=200):
-        return self.api("GET", url, expected=expected)
+        return self.api_raw("GET", url, expected=expected)
 
-    @deprecated(reason="Use ApiClient.api instead")
+    @deprecated(reason="Use ApiClient.api instead", action="ignore")
     def execute_delete_json(self, url: str, expected=(200, 404)) -> dict:
-        return self.api("GET", url, expected=expected)
+        return self.api("DELETE", url, expected=expected)
 
-    @deprecated(reason="Use ApiClient.api instead")
+    @deprecated(reason="Use ApiClient.api instead", action="ignore")
     def execute_delete(self, url: str, expected=(200, 404)):
-        return self.api("GET", url, expected=expected)
+        return self.api_raw("DELETE", url, expected=expected)
 
 
 class DatabricksApiException(Exception):

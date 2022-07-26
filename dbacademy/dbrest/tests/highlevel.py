@@ -67,6 +67,10 @@ class TestHighLevelFeatures(unittest.TestCase):
         result = databricks.tokens.list()
         self.assertIsInstance(result, list)
 
+    def testLegacyExecuteGet(self):
+        result = databricks.workspace.get_status("/")
+        self.assertEqual(result.get("object_type"), "DIRECTORY")
+
 
 # COMMAND ----------
 
