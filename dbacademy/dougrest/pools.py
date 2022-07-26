@@ -1,22 +1,32 @@
-from typing import Dict
+from typing import Dict, List
 
-from dbacademy.rest.common import ApiContainer
+from dbacademy.dougrest import DatabricksApi
+from dbacademy.rest.common import HttpErrorCodes, Item, ItemId, ApiClient
+from dbacademy.rest.crud import CRUD
 
 
-class Pools(ApiContainer):
-    def __init__(self, databricks):
+class Pools(CRUD):
+    def __init__(self, databricks: DatabricksApi):
+        super().__init__(databricks, "2.0/instance-pools", "instance_pool")
         self.databricks = databricks
 
-    def list(self):
-        response = self.databricks.api("GET", "2.0/instance-pools/list")
-        return response.get("instance_pools", [])
+    def _list(self, *, expected: HttpErrorCodes = None) -> List[Item]:
+        result = self.databricks.api("GET", f"{self.path}/list")
+        return result.get("instance_pools", [])
 
-    def get_by_id(self, id):
-        response = self.databricks.api("GET", f"2.0/instance-pools/get?instance_pool_id={id}")
-        return response
+    def _get(self, item_id: ItemId, *, expected: HttpErrorCodes = None) -> Item:
+        result = self.databricks.api_simple("GET", f"{self.path}/get?{self.id_key}={item_id}")
+        return result
 
-    def get_by_name(self, name):
-        return next((p for p in self.list() if p["instance_pool_name"] == name), None)
+    def _create(self, item: Item, *, expected: HttpErrorCodes = None) -> ItemId:
+        result = self.databricks.api("POST", f"{self.path}/create", item)
+        return result["instance_pool_id"]
+
+    def _update(self, item: Item, *, expected: HttpErrorCodes = None) -> ItemId:
+        pass
+
+    def _delete(self, item_id, *, expected: HttpErrorCodes = None):
+        pass
 
     def create(self, name, machine_type=None, min_idle=3):
         if machine_type is None:
@@ -56,8 +66,8 @@ class Pools(ApiContainer):
             return self.create(name, machine_type, min_idle)
 
     def set_acl(self, instance_pool_id,
-                user_permissions: Dict[str,str] = {},
-                group_permissions: Dict[str,str] = {"users": "CAN_ATTACH_TO"}):
+                user_permissions: Dict[str, str] = {},
+                group_permissions: Dict[str, str] = {"users": "CAN_ATTACH_TO"}):
         data = {
             "access_control_list": [
                                        {
@@ -75,8 +85,8 @@ class Pools(ApiContainer):
             "PUT", f"2.0/preview/permissions/instance-pools/{instance_pool_id}", data)
 
     def add_to_acl(self, instance_pool_id,
-                   user_permissions : Dict[str,str] = {},
-                   group_permissions : Dict[str,str] = {"users": "CAN_ATTACH_TO"}):
+                   user_permissions: Dict[str, str] = {},
+                   group_permissions: Dict[str, str] = {"users": "CAN_ATTACH_TO"}):
         data = {
             "access_control_list": [
                                        {

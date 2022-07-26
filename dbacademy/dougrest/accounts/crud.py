@@ -1,4 +1,4 @@
-from typing import Union
+from typing import Union, List
 
 from overrides import overrides
 
@@ -8,7 +8,7 @@ from dbacademy.rest.crud import CRUD
 
 class AccountsCRUD(CRUD):
     @overrides
-    def _list(self, *, expected: HttpErrorCodes = None):
+    def _list(self, *, expected: HttpErrorCodes = None) -> List[Item]:
         """Returns a list of all {plural}."""
         return self.client.api("GET", self.path, expected=expected)
 

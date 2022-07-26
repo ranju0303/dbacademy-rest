@@ -1,11 +1,13 @@
 from typing import Dict
 
+from dbacademy.dougrest.cluster_policies import ClustersPolicyClient
 from dbacademy.rest.common import ApiContainer
 
 
 class Clusters(ApiContainer):
     def __init__(self, databricks):
         self.databricks = databricks
+        self.policies = ClustersPolicyClient(databricks)
 
     def get(self, id):
         return self.databricks.api("GET", "2.0/clusters/get", data={"cluster_id": id})
