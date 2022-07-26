@@ -1,7 +1,8 @@
-import pprint
+from __future__ import annotations
 from typing import Container, Dict, Union, TypeVar
 
 from deprecated.classic import deprecated
+from pprint import pformat
 from requests import HTTPError, Response
 
 __all__ = ["CachedStaticProperty", "ApiContainer", "ApiClient", "DatabricksApiException", "HttpErrorCodes"]
@@ -41,11 +42,18 @@ class ApiContainer(object):
             elif callable(member):
                 print(f"{member_name}()")
 
-    def _register_api(self, **modules: str) -> None:
-        for name, module in modules.items():
-            i = module.rindex(":")
-            package = module[0:i]
-            class_name = module[i+1:]
+    def _register_api(self, client, **modules: str) -> None:
+        """
+        Convenience method to add APIs to an API Container
+
+        >>> self._register_api("budgets", "dbacademy.dougrest.accounts.budgets:Budgets")
+        >>> self.budgets
+        """
+        import importlib
+        for name, spec in modules.items():
+            module_name, class_name = spec.split(":")
+            cls = getattr(importlib.import_module(module_name), class_name)
+            self.__dict__[name] = cls(client)
 
 
 class ApiClient(ApiContainer):
@@ -56,7 +64,8 @@ class ApiClient(ApiContainer):
                  user: str = None,
                  password: str = None,
                  authorization_header: str = None,
-                 throttle: int = 0):
+                 client: ApiClient = None,
+                 throttle_seconds: int = 0):
         """
         Create a Databricks REST API client.
 
@@ -67,12 +76,16 @@ class ApiClient(ApiContainer):
             password: The authentication password.  Defaults to None.
             authorization_header: The header to use for authentication.
                 By default, it's generated from the token or password.
+            client: A parent ApiClient from which to clone settings.
+            throttle_seconds: Number of seconds to sleep between requests.
         """
         super().__init__()
         import requests
         from urllib3.util.retry import Retry
         from requests.adapters import HTTPAdapter
 
+        if client and not url.indexof("://"):
+            url = client.url.lstrip("/") + "/" + url.rstrip("/")
         if authorization_header:
             pass
         elif token is not None:
@@ -81,18 +94,20 @@ class ApiClient(ApiContainer):
             import base64
             encoded_auth = (user + ":" + password).encode()
             authorization_header = "Basic " + base64.standard_b64encode(encoded_auth).decode()
+        elif client is not None:
+            authorization_header = client.authorization_header
         else:
             raise ValueError("Must specify one of token, password, or authorization_header")
         if not url.endswith("/"):
             url += "/"
 
-        if throttle > 0:
-            s = "" if throttle == 1 else "s"
-            print(f"** WARNING ** Requests are being throttled by {throttle} second{s} per request.")
+        if throttle_seconds > 0:
+            s = "" if throttle_seconds == 1 else "s"
+            print(f"** WARNING ** Requests are being throttled by {throttle_seconds} second{s} per request.")
 
         self.url = url
         self.user = user
-        self.throttle = throttle
+        self.throttle_seconds = throttle_seconds
         self.read_timeout = 300   # seconds
         self.connect_timeout = 5  # seconds
         self._last_request_timestamp = 0
@@ -169,12 +184,12 @@ class ApiClient(ApiContainer):
             return response.text
 
     def _throttle_calls(self):
-        if self.throttle <= 0:
+        if self.throttle_seconds <= 0:
             return
         import time
         now = time.time()
         elapsed = now - self._last_request_timestamp
-        sleep_seconds = self.throttle - elapsed
+        sleep_seconds = self.throttle_seconds - elapsed
         if sleep_seconds > 0:
             time.sleep(sleep_seconds)
         self._last_request_timestamp = time.time()
@@ -220,7 +235,7 @@ class ApiClient(ApiContainer):
             error_type = 'Unknown Error'
 
         try:
-            body = pprint.pformat(response.json(), indent=2)
+            body = pformat(response.json(), indent=2)
         except ValueError:
             body = response.text
 

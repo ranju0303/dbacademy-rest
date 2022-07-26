@@ -68,7 +68,7 @@ class TestApiClient(unittest.TestCase):
     def testThrottle(self):
         client = ApiClient(databricks.url,
                            authorization_header=databricks.session.headers["Authorization"],
-                           throttle=2
+                           throttle_seconds=2
                            )
         import time
         t1 = time.time()
