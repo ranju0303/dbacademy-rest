@@ -1,15 +1,12 @@
-from __future__ import annotations
 from dbacademy.dbrest import DBAcademyRestClient
+from dbacademy.rest.common import ApiContainer
 
-class ScimGroupsClient:
+
+class ScimGroupsClient(ApiContainer):
 
     def __init__(self, client: DBAcademyRestClient):
         self.client = client      # Client API exposing other operations to this class
         self.base_uri = f"{self.client.endpoint}/api/2.0/preview/scim/v2/Groups"
-
-    def __call__(self) -> ScimGroupsClient:
-        """Returns itself.  Provided for backwards compatibility."""
-        return self
 
     def list(self):
         response = self.client.execute_get_json(f"{self.base_uri}")

@@ -1,4 +1,7 @@
-class ModelVersions(object):
+from dbacademy.rest.common import ApiContainer
+
+
+class ModelVersions(ApiContainer):
     def __init__(self, databricks):
         self.databricks = databricks
 

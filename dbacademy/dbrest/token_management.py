@@ -1,14 +1,11 @@
-from __future__ import annotations
 from dbacademy.dbrest import DBAcademyRestClient
+from dbacademy.rest.common import ApiContainer
 
-class TokenManagementClient:
+
+class TokenManagementClient(ApiContainer):
     def __init__(self, client: DBAcademyRestClient):
         self.client = client
         self.base_url = f"{self.client.endpoint}/api/2.0/token-management"
-
-    def __call__(self) -> TokenManagementClient:
-        """Returns itself.  Provided for backwards compatibility."""
-        return self
 
     def create_on_behalf_of_service_principal(self, application_id: str, comment: str, lifetime_seconds: int):
         params = {

@@ -1,10 +1,10 @@
 from typing import Union, Dict, List, Any, Optional
 
-from dbacademy.rest.common import DatabricksApiException
+from dbacademy.rest.common import DatabricksApiException, ApiContainer
 from dbacademy.dougrest.runs import Runs
 
 
-class Jobs(object):
+class Jobs(ApiContainer):
     def __init__(self, databricks):
         self.databricks = databricks
         self.runs = Runs(databricks)

@@ -1,8 +1,6 @@
 def main() -> None:
     """
     Run all tests.
-
-    :rtype: None
     """
     from dbacademy.dbrest.tests.highlevel import TestHighLevelFeatures
     import unittest

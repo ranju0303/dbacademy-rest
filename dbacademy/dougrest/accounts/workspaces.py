@@ -5,8 +5,7 @@ from overrides import overrides
 import time
 
 from dbacademy.dougrest.accounts.crud import AccountsCRUD, IfNotExists, IfExists
-from dbacademy.rest.client import DatabricksApi
-from dbacademy.rest.common import DatabricksApiException
+from dbacademy.dougrest.client import DatabricksApi, DatabricksApiException
 
 
 class Workspace(DatabricksApi):

@@ -1,13 +1,10 @@
-from __future__ import annotations
 from dbacademy.dbrest import DBAcademyRestClient
+from dbacademy.rest.common import ApiContainer
 
-class JobsClient:
+
+class JobsClient(ApiContainer):
     def __init__(self, client: DBAcademyRestClient):
         self.client = client      # Client API exposing other operations to this class
-
-    def __call__(self) -> JobsClient:
-        """Returns itself.  Provided for backwards compatibility."""
-        return self
 
     def create(self, params):
         if "notebook_task" in params:

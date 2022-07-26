@@ -1,4 +1,7 @@
-class Endpoints(object):
+from dbacademy.rest.common import ApiContainer
+
+
+class Endpoints(ApiContainer):
     def __init__(self, databricks):
         self.databricks = databricks
 

@@ -1,4 +1,7 @@
-class RegisteredModels(object):
+from dbacademy.rest.common import ApiContainer
+
+
+class RegisteredModels(ApiContainer):
     def __init__(self, databricks):
         self.databricks = databricks
 

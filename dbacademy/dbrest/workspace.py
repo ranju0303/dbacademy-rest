@@ -1,14 +1,11 @@
-from __future__ import annotations
 from typing import Union
 from dbacademy.dbrest import DBAcademyRestClient
+from dbacademy.rest.common import ApiContainer
 
-class WorkspaceClient:
+
+class WorkspaceClient(ApiContainer):
     def __init__(self, client: DBAcademyRestClient):
         self.client = client
-
-    def __call__(self) -> WorkspaceClient:
-        """Returns itself.  Provided for backwards compatibility."""
-        return self
 
     def ls(self, path, recursive=False, object_types=["NOTEBOOK"]):
         if not recursive:

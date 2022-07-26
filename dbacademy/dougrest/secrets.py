@@ -1,4 +1,7 @@
-class Secrets(object):
+from dbacademy.rest.common import ApiContainer
+
+
+class Secrets(ApiContainer):
     def __init__(self, databricks):
         self.databricks = databricks
 

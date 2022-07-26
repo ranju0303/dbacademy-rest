@@ -1,15 +1,12 @@
-from __future__ import annotations
 from dbacademy.dbrest import DBAcademyRestClient
+from dbacademy.rest.common import ApiContainer
 
-class SqlEndpointsClient:
+
+class SqlEndpointsClient(ApiContainer):
 
     def __init__(self, client: DBAcademyRestClient):
         self.client = client      # Client API exposing other operations to this class
         self.base_uri = f"{self.client.endpoint}/api/2.0/preview/permissions/sql/endpoints"
-
-    def __call__(self) -> SqlEndpointsClient:
-        """Returns itself.  Provided for backwards compatibility."""
-        return self
 
     def _validate_what(self, what:str):
         valid_whats = ["user_name", "group_name", "service_principal_name"]

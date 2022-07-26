@@ -1,8 +1,8 @@
-from abc import ABC, abstractmethod
+from abc import ABCMeta, abstractmethod
 
 from typing import Dict, Literal, Union
 
-from dbacademy.rest.common import ApiClient, DatabricksApiException, HttpErrorCodes
+from dbacademy.rest.common import ApiClient, ApiContainer, DatabricksApiException, HttpErrorCodes
 
 __all__ = ["CRUD", "IfNotExists", "IfExists", "ItemId", "Item", "HttpErrorCodes", "DatabricksApiException"]
 
@@ -12,7 +12,7 @@ ItemId = Union[int, str]
 Item = Dict
 
 
-class CRUD(ABC):
+class CRUD(ApiContainer, metaclass=ABCMeta):
     """
     Abstract base class for CRUD API operations.
 

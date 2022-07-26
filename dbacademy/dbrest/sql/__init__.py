@@ -1,7 +1,8 @@
-from __future__ import annotations
 from dbacademy.dbrest import DBAcademyRestClient
+from dbacademy.rest.common import ApiContainer
 
-class SqlClient():
+
+class SqlClient(ApiContainer):
     def __init__(self, client: DBAcademyRestClient):
         self.client = client      # Client API exposing other operations to this class
 
@@ -15,7 +16,3 @@ class SqlClient():
         self.queries = SqlQueriesClient(self.client)
 
         self.permissions = client.permissions.sql
-
-    def __call__(self) -> SqlClient:
-        """Returns itself.  Provided for backwards compatibility."""
-        return self

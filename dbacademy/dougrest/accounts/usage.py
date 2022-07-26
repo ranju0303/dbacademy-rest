@@ -1,4 +1,7 @@
-class Usage(object):
+from dbacademy.rest.common import ApiContainer
+
+
+class Usage(ApiContainer):
     def __init__(self, accounts):
         super().__init__()
         self.accounts = accounts

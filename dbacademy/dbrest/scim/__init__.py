@@ -1,7 +1,8 @@
-from __future__ import annotations
 from dbacademy.dbrest import DBAcademyRestClient
+from dbacademy.rest.common import ApiContainer
 
-class ScimClient():
+
+class ScimClient(ApiContainer):
     def __init__(self, client: DBAcademyRestClient):
         self.client = client      # Client API exposing other operations to this class
 
@@ -19,7 +20,3 @@ class ScimClient():
         raise Exception("The me() client is not yet supported.")
         # from dbacademy.dbrest.scim.me import ScimMeClient
         # return ScimMeClient(self, self)
-
-    def __call__(self) -> ScimClient:
-        """Returns itself.  Provided for backwards compatibility."""
-        return self

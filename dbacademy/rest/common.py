@@ -1,6 +1,5 @@
 import pprint
-from collections.abc import Container
-from typing import Union, Dict, TypeVar
+from typing import Container, Dict, Union, TypeVar
 
 from deprecated.classic import deprecated
 from requests import HTTPError, Response

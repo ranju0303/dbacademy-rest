@@ -1,8 +1,10 @@
-from __future__ import annotations
 from dbacademy.dbrest import DBAcademyRestClient
 import builtins
 
-class SqlPermissionsClient:
+from dbacademy.rest.common import ApiContainer
+
+
+class SqlPermissionsClient(ApiContainer):
 
     def __init__(self, client: DBAcademyRestClient, singular_obj_type:str, plural_obj_type:str):
         self.client = client
@@ -16,10 +18,6 @@ class SqlPermissionsClient:
         self.plural_obj_type = plural_obj_type
 
         self.base_uri = f"{self.client.endpoint}/api/2.0/preview/sql/permissions"
-
-    def __call__(self) -> SqlPermissionsClient:
-        """Returns itself.  Provided for backwards compatibility."""
-        return self
 
     def _validate_permission_level(self, permission_level:str, allow_none:bool=False):
         if allow_none and permission_level is None: return

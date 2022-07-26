@@ -1,17 +1,14 @@
-from __future__ import annotations
 from dbacademy.dbrest import DBAcademyRestClient
+from dbacademy.rest.common import ApiContainer
 
 DATA_ACCESS_CONTROL = "DATA_ACCESS_CONTROL"
 SECURITY_POLICIES = [DATA_ACCESS_CONTROL]
 
-class SqlConfigClient:
+
+class SqlConfigClient(ApiContainer):
 
     def __init__(self, client: DBAcademyRestClient):
         self.client = client
-
-    def __call__(self) -> SqlConfigClient:
-        """Returns itself.  Provided for backwards compatibility."""
-        return self
 
     def get(self):
         return self.client.execute_get_json(f"{self.client.endpoint}/api/2.0/sql/config/endpoints")

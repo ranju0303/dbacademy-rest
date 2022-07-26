@@ -1,7 +1,9 @@
-import typing
+from typing import Union
+
+from dbacademy.rest.common import ApiContainer
 
 
-class DBAcademyRestClient:
+class DBAcademyRestClient(ApiContainer):
   
     def __init__(self, token: str = None, endpoint: str = None, throttle: int = 0):
         """
@@ -84,11 +86,6 @@ class DBAcademyRestClient:
         from dbacademy.dbrest.workspace import WorkspaceClient
         self.workspace = WorkspaceClient(self)
 
-    def help(self):
-        methods = [func for func in dir(self) if callable(getattr(self, func)) and not func.startswith("__")]
-        for method in methods:
-            print(f"{method}()")
-
     def throttle_calls(self):
         import time
         time.sleep(self.throttle)
@@ -132,7 +129,7 @@ class DBAcademyRestClient:
         self.throttle_calls()
         return response
 
-    def execute_get_json(self, url: str, expected=200) -> typing.Union[dict, None]:
+    def execute_get_json(self, url: str, expected=200) -> Union[dict, None]:
         response = self.execute_get(url, expected)
 
         # Returning None in cases where expected includes 404

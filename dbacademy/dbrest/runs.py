@@ -1,14 +1,12 @@
-from __future__ import annotations
 from dbacademy.dbrest import DBAcademyRestClient
 import builtins
 
-class RunsClient:
+from dbacademy.rest.common import ApiContainer
+
+
+class RunsClient(ApiContainer):
     def __init__(self, client: DBAcademyRestClient):
         self.client = client
-
-    def __call__(self) -> RunsClient:
-        """Returns itself.  Provided for backwards compatibility."""
-        return self
 
     def get(self, run_id):
         return self.client.execute_get_json(f"{self.client.endpoint}/api/2.0/jobs/runs/get?run_id={run_id}")

@@ -1,7 +1,9 @@
 from typing import Dict
 
+from dbacademy.rest.common import ApiContainer
 
-class Clusters(object):
+
+class Clusters(ApiContainer):
     def __init__(self, databricks):
         self.databricks = databricks
 

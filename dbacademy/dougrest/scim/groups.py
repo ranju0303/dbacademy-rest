@@ -1,4 +1,7 @@
-class Groups(object):
+from dbacademy.rest.common import ApiContainer
+
+
+class Groups(ApiContainer):
     def __init__(self, databricks):
         self.databricks = databricks
 

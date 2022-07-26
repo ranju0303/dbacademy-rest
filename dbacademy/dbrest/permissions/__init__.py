@@ -1,7 +1,8 @@
-from __future__ import annotations
 from dbacademy.dbrest import DBAcademyRestClient
+from dbacademy.rest.common import ApiContainer
 
-class SqlProxy():
+
+class SqlProxy(ApiContainer):
     def __init__(self, client: DBAcademyRestClient):
         self.client = client      # Client API exposing other operations to this class
 
@@ -14,12 +15,8 @@ class SqlProxy():
         self.data_sources = SqlPermissionsClient(self.client, "data_source", "data_sources")
         self.alerts = SqlPermissionsClient(self.client, "alert", "alerts")
 
-    def __call__(self) -> SqlProxy:
-        """Returns itself.  Provided for backwards compatibility."""
-        return self
 
-
-class PermissionsClient():
+class PermissionsClient(ApiContainer):
     def __init__(self, client: DBAcademyRestClient):
         self.client = client      # Client API exposing other operations to this class
         self.sql = SqlProxy(self.client)
@@ -27,6 +24,3 @@ class PermissionsClient():
         from dbacademy.dbrest.permissions.jobs import JobsPermissionsClient
         self.jobs = JobsPermissionsClient(self.client)
 
-    def __call__(self) -> PermissionsClient:
-        """Returns itself.  Provided for backwards compatibility."""
-        return self

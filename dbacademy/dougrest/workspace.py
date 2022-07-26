@@ -1,7 +1,7 @@
-from dbacademy.rest.common import DatabricksApiException
+from dbacademy.rest.common import DatabricksApiException, ApiContainer
 
 
-class Workspace(object):
+class Workspace(ApiContainer):
     def __init__(self, databricks):
         self.databricks = databricks
 

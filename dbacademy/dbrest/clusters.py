@@ -1,13 +1,10 @@
-from __future__ import annotations
 from dbacademy.dbrest import DBAcademyRestClient
+from dbacademy.rest.common import ApiContainer
 
-class ClustersClient:
+
+class ClustersClient(ApiContainer):
     def __init__(self, client: DBAcademyRestClient):
         self.client = client
-
-    def __call__(self) -> ClustersClient:
-        """Returns itself.  Provided for backwards compatibility."""
-        return self
 
     def list(self):
         return self.client.execute_get_json(f"{self.client.endpoint}/api/2.0/clusters/list")

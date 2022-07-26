@@ -1,9 +1,9 @@
 from typing import Union, Optional, Literal, List
 
-from dbacademy.rest.common import DatabricksApiException
+from dbacademy.rest.common import DatabricksApiException, ApiContainer
 
 
-class Runs(object):
+class Runs(ApiContainer):
     def __init__(self, databricks):
         self.databricks = databricks
 

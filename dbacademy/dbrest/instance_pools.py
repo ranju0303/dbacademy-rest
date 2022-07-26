@@ -1,15 +1,11 @@
-from __future__ import annotations
 from dbacademy.dbrest import DBAcademyRestClient
+from dbacademy.rest.common import ApiContainer
 
 
-class InstancePoolsClient:
+class InstancePoolsClient(ApiContainer):
     def __init__(self, client: DBAcademyRestClient):
         self.client = client
         self.base_uri = f"{self.client.endpoint}/api/2.0/instance-pools"
-
-    def __call__(self) -> InstancePoolsClient:
-        """Returns itself.  Provided for backwards compatibility."""
-        return self
 
     def get_by_id(self, instance_pool_id):
         return self.client.execute_get_json(f"{self.base_uri}/get?instance_pool_id={instance_pool_id}")
