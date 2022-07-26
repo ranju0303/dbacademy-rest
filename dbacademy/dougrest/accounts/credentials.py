@@ -1,6 +1,6 @@
-from dbacademy.dougrest.accounts.crud import CRUD
+from dbacademy.dougrest.accounts.crud import AccountsCRUD
 
 
-class Credentials(CRUD):
-    def __init__(self, accounts):
-        super().__init__(accounts, "/credentials", "credentials", "credential")
+class Credentials(AccountsCRUD):
+    def __init__(self, client):
+        super().__init__(client, "/credentials", "credentials", singular="credential")

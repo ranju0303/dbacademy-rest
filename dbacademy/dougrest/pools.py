@@ -45,7 +45,7 @@ class Pools(object):
         return self.edit(pool, min_idle)
 
     def edit_or_create(self, name, machine_type=None, min_idle=3):
-        if machine_type == None:
+        if machine_type is None:
             machine_type = self.databricks.default_machine_type
         pool = self.get_by_name(name)
         if pool:

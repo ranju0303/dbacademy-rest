@@ -11,7 +11,7 @@ from dbacademy.dougrest.accounts.private_access import PrivateAccessSettings
 from dbacademy.dougrest.accounts.storage import StorageConfigurations
 from dbacademy.dougrest.accounts.vpc import VpcEndpoints
 from dbacademy.dougrest.accounts.workspaces import Workspaces
-from dbacademy.dougrest.common import *
+from dbacademy.rest.common import *
 
 __all__ = ["AccountsApi"]
 

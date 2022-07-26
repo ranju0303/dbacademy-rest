@@ -1,6 +1,6 @@
 from typing import Union, Optional, Literal, List
 
-from dbacademy.dougrest.common import DatabricksApiException
+from dbacademy.rest.common import DatabricksApiException
 
 
 class Runs(object):
@@ -64,7 +64,7 @@ class Runs(object):
             try:
                 return self.databricks.api("POST", "2.1/jobs/runs/delete", data={"run_id": run})
             except DatabricksApiException as e:
-                raise (e)
+                raise e
 
     def cancel(self, run: Union[int, dict], *, if_not_exists: str = "error") -> dict:
         run = self._id(run)
@@ -74,7 +74,7 @@ class Runs(object):
             try:
                 return self.databricks.api("POST", "2.1/jobs/runs/cancel", data={"run_id": run})
             except DatabricksApiException as e:
-                raise (e)
+                raise e
 
     def delete_all(self, runs: List[Union[int, dict]] = None) -> list:
         if runs is None:

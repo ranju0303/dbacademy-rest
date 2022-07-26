@@ -1,5 +1,4 @@
 from __future__ import annotations
-
 from dbacademy.dbrest import DBAcademyRestClient
 
 DATA_ACCESS_CONTROL = "DATA_ACCESS_CONTROL"

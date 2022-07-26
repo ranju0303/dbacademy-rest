@@ -126,7 +126,7 @@ class Clusters(object):
     def create_or_start(self, name, machine_type=None, driver_machine_type=None,
                         timeout_minutes=120, num_workers=2, num_cores="*", instance_pool_id=None,
                         existing_clusters=None, cluster_spec=None):
-        if existing_clusters == None:
+        if existing_clusters is None:
             existing_clusters = self.databricks.clusters.list()
         cluster = next((c for c in existing_clusters if c["cluster_name"] == name), None)
         if not cluster:

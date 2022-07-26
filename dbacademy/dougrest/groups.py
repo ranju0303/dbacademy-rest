@@ -1,4 +1,4 @@
-from dbacademy.dougrest.common import DatabricksApiException
+from dbacademy.rest.common import DatabricksApiException
 
 
 class Groups(object):

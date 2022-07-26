@@ -20,12 +20,20 @@ class TestAccountsApi(unittest.TestCase):
         result = accounts.workspaces.list()
         self.assertIsInstance(result, list)
 
+    def testWorkspaceAsDatabricksApi(self):
+        accounts = AccountsApi.default_account
+        ws = accounts.workspaces.list()[0]
+        result = ws.workspace.list("/")
+        self.assertIsInstance(result, list)
+
 
 # COMMAND ----------
 
+suite = unittest.TestSuite()
+suite.addTest(unittest.makeSuite(TestAccountsApi))
+
+
 def main():
-    suite = unittest.TestSuite()
-    suite.addTest(unittest.makeSuite(TestAccountsApi))
     runner = unittest.TextTestRunner()
     runner.run(suite)
 

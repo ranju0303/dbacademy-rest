@@ -8,7 +8,7 @@
 import unittest
 
 from dbacademy.dougrest import databricks, DatabricksApiException
-from dbacademy.dougrest.common import ApiClient
+from dbacademy.rest.common import ApiClient
 
 
 class TestApiClient(unittest.TestCase):
@@ -17,11 +17,12 @@ class TestApiClient(unittest.TestCase):
     """
 
     def testApiSimple(self):
-        response = databricks.api_simple("GET", "/2.0/workspace/list", path="/")
-        self.assertIsNotNone(response)
+        results = databricks.api_simple("GET", "/2.0/workspace/list", path="/")
+        self.assertIsNotNone(results)
 
     def testExpected404(self):
-        response = databricks.api_simple("GET", "/2.0/workspace/list", path="/does-not-exist", expected=404)
+        results = databricks.api_simple("GET", "/2.0/workspace/list", path="/does-not-exist", expected=404)
+        self.assertIsNone(results)
 
     def testSelfCallable(self):
         self.assertEqual(databricks, databricks())
@@ -29,6 +30,7 @@ class TestApiClient(unittest.TestCase):
     def testExecuteGetJson(self):
         url = "2.0/workspace/list?path=/"
         results = databricks.execute_get_json(url)
+        self.assertIsNotNone(results)
 
     def testExecuteGetJsonWithHostname(self):
         # We intentionally pass in a full URL as part of testing for legacy compatibility.
@@ -38,7 +40,7 @@ class TestApiClient(unittest.TestCase):
     def testExecuteGetJsonWithHttp(self):
         url = "https://unknown.domain.com/api/2.0/workspace/list?path=/"
         try:
-            results = databricks.execute_get_json(url)
+            databricks.execute_get_json(url)
             self.fail("Expected ValueError due to 'https:' in URL.")
         except ValueError:
             pass
@@ -46,6 +48,7 @@ class TestApiClient(unittest.TestCase):
     def testExecuteGetJsonExpected404(self):
         url = "2.0/workspace/list?path=/does-not-exist"
         results = databricks.execute_get_json(url, expected=[200, 404])
+        self.assertIsNone(results)
 
     def testNotFound(self):
         try:

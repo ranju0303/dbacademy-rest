@@ -1,8 +1,10 @@
 from __future__ import annotations
 
-from dbacademy.dougrest.common import *
+from typing import Dict
 
-__all__ = ["DatabricksApi"]
+from dbacademy.rest.common import *
+
+__all__ = ["DatabricksApi", "DatabricksApiException"]
 
 
 class DatabricksApi(dict, ApiClient):
@@ -31,7 +33,7 @@ class DatabricksApi(dict, ApiClient):
                 continue
             config = configparser.ConfigParser()
             config.read(path)
-            for section_name,section in config.items():
+            for section_name, section in config.items():
                 api_type = section.get('api_type', 'workspace')
                 if api_type != 'workspace':
                     continue

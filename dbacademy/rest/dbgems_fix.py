@@ -2,20 +2,23 @@
 Hack to work around module import problems.
 """
 
+__all__=["dbgems"]
+
 
 def _load_dbgems():
-    module_name = "dbacademy.dbgems"
-    rel_path = "dbacademy/dbgems/__init__.py"
+    import dbacademy
+    if hasattr(dbacademy, "dbgems"):
+        return getattr(dbacademy, "dbgems")
     try:
-        import dbacademy
         import dbacademy.dbgems
-        if hasattr(dbacademy, "dbgems"):
-            return dbacademy.dbgems
+        return dbacademy.dbgems
     except ModuleNotFoundError:
         pass
     import sys
     from os.path import exists
     from importlib.util import spec_from_file_location, module_from_spec
+    module_name = "dbacademy.dbgems"
+    rel_path = "dbacademy/dbgems/__init__.py"
     for path in sys.path:
         path = path + "/" + rel_path
         if exists(path):

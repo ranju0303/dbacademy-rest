@@ -5,10 +5,8 @@
 
 # COMMAND ----------
 
-import unittest
-
 from dbacademy.dbrest.tests import databricks
-
+import unittest
 
 class TestHighLevelFeatures(unittest.TestCase):
   """

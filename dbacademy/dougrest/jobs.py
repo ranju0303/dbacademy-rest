@@ -1,6 +1,6 @@
 from typing import Union, Dict, List, Any, Optional
 
-from dbacademy.dougrest.common import DatabricksApiException
+from dbacademy.rest.common import DatabricksApiException
 from dbacademy.dougrest.runs import Runs
 
 

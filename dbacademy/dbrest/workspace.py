@@ -1,9 +1,6 @@
 from __future__ import annotations
-
 from typing import Union
-
 from dbacademy.dbrest import DBAcademyRestClient
-
 
 class WorkspaceClient:
     def __init__(self, client: DBAcademyRestClient):

@@ -5,7 +5,9 @@ from typing import Union, Dict, TypeVar
 from deprecated.classic import deprecated
 from requests import HTTPError, Response
 
-__all__ = ["CachedStaticProperty", "ApiContainer", "ApiClient", "DatabricksApiException"]
+__all__ = ["CachedStaticProperty", "ApiContainer", "ApiClient", "DatabricksApiException", "HttpErrorCodes"]
+
+HttpErrorCodes = Union[int, Container[int]]
 
 
 class CachedStaticProperty:
@@ -104,7 +106,7 @@ class ApiClient(ApiContainer):
         self.session.mount('https://', HTTPAdapter(max_retries=retry))
 
     def api_simple(self, http_method: str, endpoint_path: str, *,
-                   expected: Union[int, Container[int]] = None, **data) -> Union[str, Dict]:
+                   expected: HttpErrorCodes = None, **data) -> Union[str, Dict]:
         """
         Invoke the Databricks REST API.
 
@@ -112,7 +114,7 @@ class ApiClient(ApiContainer):
             http_method: 'GET', 'PUT', 'POST', or 'DELETE'
             endpoint_path: The path to append to the URL for the API endpoint, excluding the leading '/'.
                 For example: path="2.0/secrets/put"
-            expected: A collection of HTTP error codes to treat as expected rather than as an error.
+            expected: HTTP error codes to treat as expected rather than as an error.
             **data: Payload to attach to the HTTP request.  GET requests encode as params, all others as json.
 
         Returns:
@@ -126,7 +128,7 @@ class ApiClient(ApiContainer):
         return self.api(http_method, endpoint_path, data, expected=expected)
 
     def api(self, http_method: str, endpoint_path: str, data=None, *,
-            expected: Union[int, Container[int]] = None) -> Union[str, Dict]:
+            expected: HttpErrorCodes = None) -> Union[None, str, Dict]:
         """
         Invoke the Databricks REST API.
 
@@ -135,7 +137,7 @@ class ApiClient(ApiContainer):
             endpoint_path: The path to append to the URL for the API endpoint, excluding the leading '/'.
                 For example: path="2.0/secrets/put"
             data: Payload to attach to the HTTP request.  GET requests encode as params, all others as json.
-            expected: A collection of HTTP error codes to treat as expected rather than as an error.
+            expected: HTTP error codes to treat as expected rather than as an error.
 
         Returns:
             The return value of the API call as parsed JSON.  If the result is invalid JSON then the
@@ -160,7 +162,8 @@ class ApiClient(ApiContainer):
             response = self.session.request(http_method, url, params=params, timeout=timeout)
         else:
             response = self.session.request(http_method, url, data=json.dumps(data), timeout=timeout)
-        self._raise_for_status(response, expected)
+        if not (200 <= response.status_code < 300):
+            return self._raise_for_status(response, expected)
         try:
             return response.json()
         except ValueError:

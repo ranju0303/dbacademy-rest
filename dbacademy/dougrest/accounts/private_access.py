@@ -1,7 +1,8 @@
-from dbacademy.dougrest.accounts.crud import CRUD
+from dbacademy.dougrest.accounts.crud import AccountsCRUD
 
 
-class PrivateAccessSettings(CRUD):
-    def __init__(self, accounts):
+class PrivateAccessSettings(AccountsCRUD):
+    def __init__(self, client):
         # The unusual plural form private_access_settingses is intentional.
-        super().__init__(accounts, "/private-access-settings", "private_access_settings", "private_access_settingses")
+        super().__init__(client, "/private-access-settings", "private_access_settings",
+                         plural="private_access_settingses")

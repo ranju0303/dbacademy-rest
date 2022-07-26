@@ -1,7 +1,5 @@
 from __future__ import annotations
-
 from dbacademy.dbrest import DBAcademyRestClient
-
 
 class ScimClient():
     def __init__(self, client: DBAcademyRestClient):
