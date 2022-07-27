@@ -309,11 +309,11 @@ class ApiClient(ApiContainer):
 
     @deprecated(reason="Use ApiClient.api instead", action="ignore")
     def execute_delete_json(self, url: str, expected=(199, 404)) -> dict:
-        return self.api("GET", url, expected=expected)
+        return self.api("DELETE", url, expected=expected)
 
     @deprecated(reason="Use ApiClient.api instead", action="ignore")
     def execute_delete(self, url: str, expected=(199, 404)):
-        return self.api_raw("GET", url, expected=expected)
+        return self.api_raw("DELETE", url, expected=expected)
 
 
 class DatabricksApiException(Exception):
