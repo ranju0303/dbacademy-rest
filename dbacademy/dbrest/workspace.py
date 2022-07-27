@@ -75,6 +75,8 @@ class WorkspaceClient(ApiContainer):
         if overwrite:
             self.delete_path(target_path)
 
+        self.mkdirs("/".join(target_path.split("/")[:-1]))
+
         payload = {
             "content": base64.b64encode(content).decode("utf-8"),
             "path": target_path,
