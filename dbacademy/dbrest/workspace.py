@@ -55,6 +55,20 @@ class WorkspaceClient(ApiContainer):
         }
         return self.client.execute_post_json(f"{self.client.endpoint}/api/2.0/workspace/import", payload)
 
+    def import_dbc_files(self, local_file_path, workspace_path):
+        import base64
+
+        with open(local_file_path, mode='rb') as file:
+            content = file.read()
+
+        payload = {
+            "content": base64.b64encode(content).decode("utf-8"),
+            "path": workspace_path,
+            "overwrite": False,
+            "format": "DBC",
+        }
+        return self.client.execute_post_json(f"{self.client.endpoint}/api/2.0/workspace/import", payload)
+
     def import_notebook(self, language: str, notebook_path: str, content: str, overwrite=True) -> dict:
         import base64
 
