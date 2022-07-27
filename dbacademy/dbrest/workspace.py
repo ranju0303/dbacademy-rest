@@ -55,8 +55,12 @@ class WorkspaceClient(ApiContainer):
         }
         return self.client.execute_post_json(f"{self.client.endpoint}/api/2.0/workspace/import", payload)
 
-    def import_dbc_files(self, local_file_path, workspace_path):
-        import base64
+    def import_dbc_files(self, local_file_path, workspace_path, dbc_url=None):
+        import os, base64, urllib
+
+        if dbc_url is None:
+            os.remove(local_file_path)
+            urllib.request.urlretrieve(dbc_url, local_file_path)
 
         with open(local_file_path, mode='rb') as file:
             content = file.read()
