@@ -8,6 +8,8 @@ class Permissions(ApiContainer):
         self.client = client
         from dbacademy.rest.permissions.clusters import Clusters
         self.clusters = Clusters(client)
+        from dbacademy.rest.permissions.directories import Directories
+        self.directories = Directories(client)
         from dbacademy.rest.permissions.jobs import Jobs
         self.jobs = Jobs(client)
         from dbacademy.rest.permissions.pools import Pools
