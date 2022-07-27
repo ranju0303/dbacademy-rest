@@ -55,19 +55,19 @@ class WorkspaceClient(ApiContainer):
         }
         return self.client.execute_post_json(f"{self.client.endpoint}/api/2.0/workspace/import", payload)
 
-    def import_dbc_files(self, target_path, dbc_url=None, overwrite=True, local_file_path=None):
+    def import_dbc_files(self, target_path, source_url=None, overwrite=True, local_file_path=None):
         import os, base64, urllib
 
-        if local_file_path is None and dbc_url is None:
-            raise AssertionError(f"Either the local_file_path ({local_file_path}) or dbc_url ({dbc_url}) parameter must be specified")
+        if local_file_path is None and source_url is None:
+            raise AssertionError(f"Either the local_file_path ({local_file_path}) or source_url ({source_url}) parameter must be specified")
 
         if local_file_path is None:
-            file_name = dbc_url.split("/")[-1]
+            file_name = source_url.split("/")[-1]
             local_file_path = f"/tmp/{file_name}"
 
-        if dbc_url is not None:
+        if source_url is not None:
             if os.path.exists(local_file_path): os.remove(local_file_path)
-            urllib.request.urlretrieve(dbc_url, local_file_path)
+            urllib.request.urlretrieve(source_url, local_file_path)
 
         with open(local_file_path, mode='rb') as file:
             content = file.read()
