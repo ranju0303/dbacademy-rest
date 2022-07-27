@@ -55,10 +55,14 @@ class WorkspaceClient(ApiContainer):
         }
         return self.client.execute_post_json(f"{self.client.endpoint}/api/2.0/workspace/import", payload)
 
-    def import_dbc_files(self, local_file_path, workspace_path, dbc_url=None):
+    def import_dbc_files(self, temp_install_dir, local_file_path=None, dbc_url=None):
         import os, base64, urllib
 
-        if dbc_url is None:
+        if local_file_path is None:
+            file_name = dbc_url.split("/")[-1]
+            local_file_path = f"/tmp/{file_name}"
+
+        if dbc_url is not None:
             os.remove(local_file_path)
             urllib.request.urlretrieve(dbc_url, local_file_path)
 
@@ -67,7 +71,7 @@ class WorkspaceClient(ApiContainer):
 
         payload = {
             "content": base64.b64encode(content).decode("utf-8"),
-            "path": workspace_path,
+            "path": temp_install_dir,
             "overwrite": False,
             "format": "DBC",
         }
