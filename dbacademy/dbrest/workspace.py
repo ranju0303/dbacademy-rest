@@ -63,7 +63,7 @@ class WorkspaceClient(ApiContainer):
             local_file_path = f"/tmp/{file_name}"
 
         if dbc_url is not None:
-            os.remove(local_file_path)
+            if os.path.exists(local_file_path): os.remove(local_file_path)
             urllib.request.urlretrieve(dbc_url, local_file_path)
 
         with open(local_file_path, mode='rb') as file:
