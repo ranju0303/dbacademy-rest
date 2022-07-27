@@ -38,7 +38,7 @@ class TestPermissionsApi(unittest.TestCase):
         for ac in acl:
             if ac.get("group_name") == "users":
                 for perm in ac["all_permissions"]:
-                    if perm["permission_level"]=="CAN_USE" and not perm["inherited"]:
+                    if perm["permission_level"] == "CAN_USE" and not perm["inherited"]:
                         found = True
         self.assertTrue(found)
         databricks.clusters.policies.delete_by_id(policy_id)
