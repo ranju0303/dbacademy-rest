@@ -58,6 +58,9 @@ class WorkspaceClient(ApiContainer):
     def import_dbc_files(self, target_path, local_file_path=None, dbc_url=None, overwrite=True):
         import os, base64, urllib
 
+        if local_file_path is None and dbc_url is None:
+            raise AssertionError(f"Either the local_file_path ({local_file_path}) or dbc_url ({dbc_url}) parameter must be specified")
+
         if local_file_path is None:
             file_name = dbc_url.split("/")[-1]
             local_file_path = f"/tmp/{file_name}"
