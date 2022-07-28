@@ -21,7 +21,7 @@ class ScimGroupsClient(ApiContainer):
 
     def get_by_name(self, name):
         for group in self.list():
-            if name == group.get("name"):
+            if name == group.get("displayName"):
                 return group
 
         return None
@@ -47,38 +47,38 @@ class ScimGroupsClient(ApiContainer):
     #     url = f"{self.client.endpoint}/api/2.0/preview/scim/v2/Groups"
     #     return self.client.execute_post_json(url, payload, expected=[200, 201])
 
-    # def add_entitlement(self, group_id, entitlement):
-    #     payload = {
-    #         "schemas": ["urn:ietf:params:scim:api:messages:2.0:PatchOp"],
-    #         "Operations": [
-    #             {
-    #                 "op": "add",
-    #                 "path": "entitlements",
-    #                 "value": [
-    #                     {
-    #                         "value": entitlement
-    #                     }
-    #                 ]
-    #             }
-    #         ]
-    #     }
-    #     url = f"{self.client.endpoint}/api/2.0/preview/scim/v2/Users/{group_id}"
-    #     return self.client.execute_patch_json(url, payload)
+    def add_entitlement(self, group_id, entitlement):
+        payload = {
+            "schemas": ["urn:ietf:params:scim:api:messages:2.0:PatchOp"],
+            "Operations": [
+                {
+                    "op": "add",
+                    "path": "entitlements",
+                    "value": [
+                        {
+                            "value": entitlement
+                        }
+                    ]
+                }
+            ]
+        }
+        url = f"{self.base_uri}/{group_id}"
+        return self.client.execute_patch_json(url, payload)
 
-    # def remove_entitlement(self, group_id, entitlement):
-    #     payload = {
-    #         "schemas": ["urn:ietf:params:scim:api:messages:2.0:PatchOp"],
-    #         "Operations": [
-    #             {
-    #                 "op": "delete",
-    #                 "path": "entitlements",
-    #                 "value": [
-    #                     {
-    #                         "value": entitlement
-    #                     }
-    #                 ]
-    #             }
-    #         ]
-    #     }
-    #     url = f"{self.client.endpoint}/api/2.0/preview/scim/v2/Users/{group_id}"
-    #     return self.client.execute_patch_json(url, payload)
+    def remove_entitlement(self, group_id, entitlement):
+        payload = {
+            "schemas": ["urn:ietf:params:scim:api:messages:2.0:PatchOp"],
+            "Operations": [
+                {
+                    "op": "delete",
+                    "path": "entitlements",
+                    "value": [
+                        {
+                            "value": entitlement
+                        }
+                    ]
+                }
+            ]
+        }
+        url = f"{self.base_uri}/{group_id}"
+        return self.client.execute_patch_json(url, payload)
