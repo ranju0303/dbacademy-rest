@@ -181,3 +181,7 @@ class PipelinesClient(ApiContainer):
 
     def start_by_id(self, pipeline_id: str):
         return self.client.execute_post_json(f"{self.base_uri}/{pipeline_id}/updates", dict())
+
+    def start_by_name(self, name: str):
+        pipeline_id = self.get_by_name(name).get("pipeline_id")
+        return self.start_by_id(pipeline_id)
