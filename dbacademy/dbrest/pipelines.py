@@ -1,5 +1,6 @@
 from dbacademy.dbrest import DBAcademyRestClient
 import builtins
+from typing import Union
 
 from dbacademy.rest.common import ApiContainer
 
@@ -68,7 +69,7 @@ class PipelinesClient(ApiContainer):
     def create_from_dict(self, params: dict):
         return self.client.execute_post_json(f"{self.base_uri}", params)
 
-    def create_or_update(self, name: str, storage: str, target: str, continuous: bool = False, development: bool = True, configuration: dict = None, notebooks: list = None, libraries: list = None, clusters: list = None, min_workers: int = 0, max_workers: int = 0, photon: bool = True, pipeline_id=None):
+    def create_or_update(self, name: str, storage: str, target: str, continuous: bool = False, development: bool = True, configuration: dict = None, notebooks: list = None, libraries: list = None, clusters: list = None, min_workers: int = 0, max_workers: int = 0, photon: bool = True, pipeline_id: Union[str, None] = None):
 
         params = self.to_dict(name=name,
                               storage=storage,
@@ -83,7 +84,9 @@ class PipelinesClient(ApiContainer):
                               max_workers=max_workers,
                               photon=photon)
 
-        if pipeline_id is not None:
+        if pipeline_id is None:
+            pipeline = self.get_by_name(name)
+            pipeline_id = pipeline.get("pipeline_id")
             self.update_from_dict(pipeline_id, params)
             return pipeline_id
         else:
