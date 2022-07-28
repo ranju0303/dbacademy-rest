@@ -18,3 +18,6 @@ class Permissions(ApiContainer):
 
         from dbacademy.rest.permissions.cluster_policies import ClusterPolicies
         self.cluster_policies = ClusterPolicies(client)
+
+        from dbacademy.rest.permissions.warehouses import Warehouses
+        self.warehouses = Warehouses(client)
