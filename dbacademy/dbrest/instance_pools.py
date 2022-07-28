@@ -30,7 +30,7 @@ class InstancePoolsClient(ApiContainer):
             # Issue an update request to the pool
             instance_pool_id = pool.get("instance_pool_id")
             self.update_by_id(instance_pool_id=instance_pool_id,
-                              instance_pool_name="Student Pool",
+                              instance_pool_name=instance_pool_name,
                               max_capacity=max_capacity,
                               min_idle_instances=min_idle_instances,
                               idle_instance_autotermination_minutes=idle_instance_autotermination_minutes)
