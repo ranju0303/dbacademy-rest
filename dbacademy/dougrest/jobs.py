@@ -67,7 +67,14 @@ class Jobs(ApiContainer):
             f"DatabricksApi.jobs.delete(job): job must be id:int, name:str, job:dict.  Found: {job!r}.")
 
     def list(self):
-        return self.databricks.api("GET", "2.1/jobs/list").get('jobs', [])
+        offset=0
+        while True:
+            response = self.databricks.api_simple("GET", "2.1/jobs/list", limit=25, offset=offset)
+            jobs = response.get('jobs', [])
+            yield from jobs
+            offset += len(jobs)
+            if not response["has_more"]:
+                return
 
     def list_by_name(self):
         results = {}
