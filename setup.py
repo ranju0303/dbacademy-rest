@@ -13,6 +13,7 @@ reqs = [
 setuptools.setup(
     name="dbacademy-rest",
     version="0.1",
-    packages=find_packages(),
     install_requires=reqs,
+    package_dir={"dbacademy": "src"},
+    packages=find_packages()
 )
