@@ -8,7 +8,7 @@ reqs = [
     "urllib3",
     "overrides",
     "Deprecated",
-    'git+https://github.com/databricks-academy/dbacademy-gems#dbacademy-gems-0.1',
+#    'git+https://github.com/databricks-academy/dbacademy-gems#dbacademy-gems-0.1',
 ]
 
 setuptools.setup(
