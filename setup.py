@@ -15,5 +15,5 @@ setuptools.setup(
     version="0.1",
     install_requires=reqs,
     package_dir={"dbacademy": "src"},
-    packages=find_packages()
+    packages=find_packages(where="src")
 )
