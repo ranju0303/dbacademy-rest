@@ -20,7 +20,7 @@ class Endpoints(ApiContainer):
         return {e["name"]: e for e in endpoints}
 
     def create(self, name, size="XSMALL", min_num_clusters=1, max_num_clusters=1, timeout_minutes=120,
-               photon=False, spot=False, preview_channel=False):
+               photon=False, spot=False, preview_channel=False, **spec):
         data = {
             "name": name,
             "size": size,
@@ -33,6 +33,7 @@ class Endpoints(ApiContainer):
             data["channel"] = {"name": "CHANNEL_NAME_PREVIEW"}
         if timeout_minutes and timeout_minutes > 0:
             data["auto_stop_mins"] = timeout_minutes
+        data.update(spec)
         response = self.databricks.api("POST", "2.0/sql/endpoints/", data)
         return response["id"]
 
