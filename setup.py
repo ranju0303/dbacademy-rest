@@ -8,6 +8,7 @@ reqs = [
     "urllib3",
     "overrides",
     "Deprecated",
+    'git+https://github.com/databricks-academy/dbacademy-gems#dbacademy-gems-0.1',
 ]
 
 setuptools.setup(
@@ -15,5 +16,5 @@ setuptools.setup(
     version="0.1",
     packages=find_packages(),
     install_requires=reqs,
-    dependency_links=['https://github.com/databricks-academy/dbacademy-gems#dbacademy-gems-0.1']
+    # dependency_links=['https://github.com/databricks-academy/dbacademy-gems#dbacademy-gems-0.1']
 )
