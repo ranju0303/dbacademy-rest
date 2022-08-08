@@ -22,9 +22,9 @@ class Users(ApiContainer):
             if u["username"] == username:
                 return u
 
-    def update(self, user):
+    def overwrite(self, user):
         id = user["id"]
-        return self.databricks.api("PATCH", f"2.0/preview/scim/v2/Users/{id}", data=user)
+        return self.databricks.api("PUT", f"2.0/preview/scim/v2/Users/{id}", data=user)
 
     def create(self, username, allow_cluster_create=True):
         entitlements = []
