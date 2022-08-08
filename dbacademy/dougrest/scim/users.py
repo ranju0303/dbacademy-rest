@@ -1,3 +1,5 @@
+from typing import List, Dict
+
 from dbacademy.rest.common import ApiContainer
 
 
@@ -19,12 +21,53 @@ class Users(ApiContainer):
 
     def get_by_username(self, username):
         for u in self.list():
-            if u["username"] == username:
+            if u["userName"] == username:
                 return u
 
-    def overwrite(self, user):
+    def overwrite(self, user: dict):
         id = user["id"]
         return self.databricks.api("PUT", f"2.0/preview/scim/v2/Users/{id}", data=user)
+
+    def patch(self, user: dict, operations: List[Dict]):
+        id = user["id"]
+        data = {
+            "schemas": ["urn:ietf:params:scim:api:messages:2.0:PatchOp"],
+            "Operations": operations
+        }
+        return self.databricks.api("PATCH", f"2.0/preview/scim/v2/Users/{id}", data=data)
+
+    def set_entitlements(self, user: dict, entitlements: Dict[str, bool]):
+        adds = []
+        removes = []
+        for entitlement_name, entitlement_value in entitlements.items():
+            if entitlement_value is None:
+                pass
+            elif entitlement_value:
+                adds.append(entitlement_name)
+            else:
+                removes.append(entitlement_name)
+        operations = []
+        if adds:
+            operations.append({
+                "op": "add",
+                "path": "entitlements",
+                "value": [{"value": entitlement_name} for entitlement_name in adds],
+            })
+        if removes:
+            query = " or " .join([f"value eq \"{entitlement_name}\"" for entitlement_name in removes])
+            operations.append({
+                "op": "remove",
+                "path": f"entitlements[{query}]",
+            })
+        if operations:
+            return self.patch(user, operations)
+
+    def set_cluster_create(self, user: dict, cluster_create: bool = None, pool_create: bool = None):
+        entitlements = {
+            "allow-cluster-create": cluster_create,
+            "allow-instance-pool-create": pool_create,
+        }
+        return self.set_entitlements(user, entitlements)
 
     def create(self, username, allow_cluster_create=True):
         entitlements = []
