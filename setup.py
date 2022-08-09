@@ -7,7 +7,7 @@ reqs = [
     "urllib3",
     "overrides",
     "Deprecated",
-    'dbacademy-gems@git+https://github.com/databricks-academy/dbacademy-gems',
+    #'dbacademy-gems@git+https://github.com/databricks-academy/dbacademy-gems',
 ]
 
 def find_dbacademy_packages():
