@@ -23,9 +23,6 @@ class JobsClient(ApiContainer):
     def create_2_1(self, params):
         return self.client.execute_post_json(f"{self.client.endpoint}/api/2.1/jobs/create", params)
 
-    def get(self, job_id):
-        return self.client.execute_get_json(f"{self.client.endpoint}/api/2.0/jobs/get?job_id={job_id}")
-
     def run_now(self, job_id: str, notebook_params: dict = None):
         payload = {
             "job_id": job_id
@@ -35,12 +32,26 @@ class JobsClient(ApiContainer):
 
         return self.client.execute_post_json(f"{self.client.endpoint}/api/2.0/jobs/run-now", payload)
 
-    def delete_by_job_id(self, job_id):
-        return self.client.execute_post_json(f"{self.client.endpoint}/api/2.0/jobs/delete", {"job_id": job_id})
+    def get(self, job_id):
+        return self.get_by_id(job_id)
+
+    def get_by_id(self, job_id):
+        return self.client.execute_get_json(f"{self.client.endpoint}/api/2.0/jobs/get?job_id={job_id}")
+
+    def get_by_name(self, name):
+        jobs = self.list()
+        for job in jobs:
+            if name == job.get("settings").get("name"):
+                job_id = job["job_id"]
+                return self.get_by_id(job_id)
+        return None
 
     def list(self):
         response = self.client.execute_get_json(f"{self.client.endpoint}/api/2.0/jobs/list")
         return response.get("jobs", list())
+
+    def delete_by_job_id(self, job_id):
+        return self.client.execute_post_json(f"{self.client.endpoint}/api/2.0/jobs/delete", {"job_id": job_id})
 
     def delete_by_name(self, jobs, success_only):
         if type(jobs) == dict:
