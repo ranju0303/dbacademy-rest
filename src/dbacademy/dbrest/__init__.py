@@ -46,6 +46,9 @@ class DBAcademyRestClient(ApiClient):
         from dbacademy.dbrest.cluster_policies import ClustersPolicyClient
         self.cluster_policies = ClustersPolicyClient(self)
 
+        from dbacademy.dbrest.feature_store import FeatureStoreClient
+        self.feature_store = FeatureStoreClient(self)
+
         from dbacademy.dbrest.instance_pools import InstancePoolsClient
         self.instance_pools = InstancePoolsClient(self)
 

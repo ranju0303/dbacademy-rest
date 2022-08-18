@@ -2,7 +2,7 @@ from dbacademy.dbrest import DBAcademyRestClient
 from dbacademy.rest.common import ApiContainer
 
 
-class ReposClient(ApiContainer):
+class FeatureStoreClient(ApiContainer):
     def __init__(self, client: DBAcademyRestClient):
         self.client = client
         self.base_uri = f"{self.client.endpoint}/api/2.0/feature-store/"
