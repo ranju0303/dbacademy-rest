@@ -7,5 +7,6 @@ class FeatureStoreClient(ApiContainer):
         self.client = client
         self.base_uri = f"{self.client.endpoint}/api/2.0/feature-store/"
 
-    def search_tables(self, max_results=10) -> dict:
-        return self.client.execute_get_json(f"{self.base_uri}/feature-tables/search?max_results={max_results}")
+    def search_tables(self, max_results:int = 10) -> dict:
+        results = self.client.execute_get_json(f"{self.base_uri}/feature-tables/search?max_rsults={max_results}")
+        return results.get("feature_tables", [])
