@@ -18,6 +18,7 @@ class MLflowClient(ApiContainer):
             endpoint_status = self.get_endpoint_status(model_name)
             state = endpoint_status.get("state")
             if state == "ENDPOINT_STATE_READY":
+                time.sleep(delay_seconds)  # Give it a couple extra seconds to complete the transition
                 return print(f"Endpoint is ready ({state})")
 
             print(f"Endpoint not ready ({state}), waiting {delay_seconds} seconds")
@@ -37,6 +38,7 @@ class MLflowClient(ApiContainer):
                 if version.get("endpoint_version_name") == str(version_name):
                     state = version.get("state")
                     if state == "VERSION_STATE_READY":
+                        time.sleep(delay_seconds)  # Give it a couple extra seconds to complete the transition
                         return print(f"Endpoint version is ready ({state})")
                     else:
                         print(f"Version not ready ({state}), waiting {delay_seconds} seconds")
