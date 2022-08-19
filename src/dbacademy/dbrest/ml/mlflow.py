@@ -22,3 +22,10 @@ class MLflowClient(ApiContainer):
             else:
                 print(f"Endpoint not ready ({state}), waiting {delay_seconds} seconds")
                 time.sleep(delay_seconds)  # Wait N seconds
+
+    def list_endpoint_versions(self, model_name):
+        url = f"{self.base_uri}/endpoints/list-versions"
+        if model_name is not None:
+            url += f"?registered_model_name={model_name}"
+
+        return self.client.execute_get_json(url).get("endpoint_versions", [])
