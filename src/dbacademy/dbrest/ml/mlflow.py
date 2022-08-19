@@ -30,7 +30,7 @@ class MLflowClient(ApiContainer):
 
         return self.client.execute_get_json(url).get("endpoint_versions", [])
 
-    def wait_for_endpoint_version(self, model_name, version_name):
+    def wait_for_endpoint_version(self, model_name, version_name, delay_seconds=10):
         import time
         while True:
             for version in self.list_endpoint_versions(model_name):
@@ -39,5 +39,5 @@ class MLflowClient(ApiContainer):
                     if state == "VERSION_STATE_READY":
                         return print(f"Endpoint version is ready ({state})")
                     else:
-                        print(f"Version not ready ({state}), waiting 10 seconds")
-                        time.sleep(10)
+                        print(f"Version not ready ({state}), waiting {delay_seconds} seconds")
+                        time.sleep(delay_seconds)
