@@ -1,5 +1,3 @@
-!pip install typing_extensions
-from typing_extensions import Literal
 from __future__ import annotations
 from typing import Container, Dict, TypeVar, Union
 
@@ -11,8 +9,8 @@ __all__ = ["CachedStaticProperty", "ApiContainer", "ApiClient", "DatabricksApiEx
            "HttpErrorCodes", "IfNotExists", "IfExists", "Item", "ItemId", "ItemOrId"]
 
 HttpErrorCodes = Union[int, Container[int]]
-IfNotExists = Literal["error", "ignore"]
-IfExists = Literal["create", "error", "ignore", "overwrite", "update"]
+#IfNotExists = Literal["error", "ignore"]
+#IfExists = Literal["create", "error", "ignore", "overwrite", "update"]
 Item = Dict
 ItemId = Union[int, str]
 ItemOrId = Union[int, str, Dict]
