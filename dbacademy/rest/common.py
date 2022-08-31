@@ -1,3 +1,5 @@
+!pip install typing_extensions
+from typing_extensions import Literal
 from __future__ import annotations
 from typing import Container, Dict, TypeVar, Union
 
