@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import Container, Dict, Literal, TypeVar, Union
+from typing import Container, Dict, TypeVar, Union
 
 from deprecated.classic import deprecated
 from pprint import pformat
